@@ -1,14 +1,5 @@
 # Ch 1 Introducing Rust
 
-**Introducing Rust
-
-**
-
-**
-
-**
-
-**What is the "nightly" compiler?**
 
 Rust has** three concurrent releases** at any given time: **stable, beta, and nightly**.
 
@@ -24,9 +15,6 @@ Many of Rust's features are drawn from two programming sub-fields: systems progr
 
 ![Screen_Shot_2020-05-04_at_7-41-19_AM.png](image/Screen_Shot_2020-05-04_at_7-41-19_AM.png)
 
-**
-
-**
 
 **Rust's distinguishing feature** as a programming language is **its ability to prevent invalid data access at compile time**. It guarantees that your** program is memory safe without imposing run time costs**. Other languages can provide this level of safety, but they require adding checks to during your program's execution, thus slowing it down.
 
@@ -51,32 +39,30 @@ Flowing out from the three principles discussed above are three overarching feat
 
 **Downsides of Rust**
 
-**
-
-**
 
 1. **Cyclic Data Structures**
 2. **Slow Compile Times**
 3. **Strictness**
 4. **Size of the language**
 
+```rust
 usestd::rc::Rc;
 
 usestd::sync::{Arc, Mutex};
 
-fnmain() {
+fn main() {
 
-leta =10;// integer on stack
+    let a =10;// integer on stack
 
-letb =Box::new(20);// integer on heap (boxed integer)
+    let b =Box::new(20);// integer on heap (boxed integer)
 
-letc = Rc::new(Box::new(30));// boxed integer wrapped with a reference counter
+    let c = Rc::new(Box::new(30));// boxed integer wrapped with a reference counter
 
-letd = Arc::new(Mutex::new(40));// integer protected by mutex lock wrapped with reference counter
+    let d = Arc::new(Mutex::new(40));// integer protected by mutex lock wrapped with reference counter
 
-println!("a: {:?}, b: {:?}, c: {:?}, d: {:?}", a, b, c, d);
-
+    println!("a: {:?}, b: {:?}, c: {:?}, d: {:?}", a, b, c, d);
 }
+```
 
 The example above demonstrates that there are many choices in Rust. It puts the burden of choice on the programmer. Exactly which integer you might need depends on the problem at hand.
 
@@ -84,19 +70,11 @@ It's important to remember that** Rust does not protect you from logical errors*
 
 **Where does Rust best fit?**
 
-**
-
-**
-
 Utilities written in Rust are compiled as** static binaries** by default. This method avoids depending on shared libraries. This makes Rust programs easy to distribute. The real answer is basically everywhere.
 
 **Hello World**
 
-**
-
-**
-
-```
+```bash
 ~/rust/in_action/ch_1_introduction(master*) » cd /tmp      lkrych@LKRYCH-M-W49D
 --------------------------------------------------------------------------------
 /tmp » cargo new --bin hello                               lkrych@LKRYCH-M-W49D
@@ -111,9 +89,6 @@ Utilities written in Rust are compiled as** static binaries** by default. This m
 Hello, world!
 ```
 
-**
-
-**
 
 Navigate to the **temporary folder**, a directory that is used to hold temporary files in an OS. Many OSes automatically delete the contents of this directory at bootup or at regular intervals.
 
@@ -145,37 +120,33 @@ Notice the project structure has changed a great deal with the compilation. 
 
 **Hello International**
 
-**
+```rust
 
-**
+fn hello_international() {
 
-fnhello_international() {
+    println!("Hello, world!");// the oldest of dear dear friends.
 
-println!("Hello, world!");// the oldest of dear dear friends.
+    let southern_germany ="Grüß Gott!";
 
-letsouthern_germany ="Grüß Gott!";
+    let japan ="ハロー・ワールド";
 
-letjapan ="ハロー・ワールド";
+    let regions = [southern_germany, japan];
 
-letregions = [southern_germany, japan];
+    for region in regions.iter() {
 
-forregioninregions.iter() {
+        println!("{}", &region);
 
-println!("{}", &region);
-
-}
+    }
 
 }
 
-fnmain() {
+fn main() {
 
-hello_international();
+    hello_international();
 
 }
+```
 
-**
-
-**
 
 **Strings are UTF-8** in Rust. This means you are able to use non-English characters with relative ease. 
 

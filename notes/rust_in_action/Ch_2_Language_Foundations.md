@@ -1,26 +1,27 @@
 # Ch 2 Language Foundations
-
+```rust
 fnmain() {
 
-    leta =10;
+    let a =10;
 
-    letb:i32=20;
+    let b:i32=20;
 
-    letc =30i32;
+    let c =30i32;
 
-    letd =30_i32;
+    let d =30_i32;
 
-    lete =add(a, b),add(c,d));
+    let e =add(a, b),add(c,d));
 
     println!("(a + b) + (c + d) = {}", e);
 
 }
 
-fnadd(i:i32, j:i32) ->i32{
+fn add(i:i32, j:i32) ->i32{
 
     i + j//implicit return
 
 }
+```
 
 The **entrypoint** to all Rust programs is **main**. Unlike C, main can appear anywhere in the file, rather than only at the end. It takes no arguments and returns no values.
 
@@ -34,39 +35,41 @@ The `println!` expression is a **macro**. Macros are function-like, but **return
 
 **Compile a single file of Rust code**
 
-```
+```bash
 rustc single-file.rs
 ```
 
 Projects larger than a single file tend to be compiled with a higher-level tool called cargo. Cargo understands how to compile multi-file projects. It executes rustc on your behalf. If you are ever curious about what cargo is doing, use the -v verbose flag. 
 
 **Numbers**
-
+```rust
 fnmain() {
 
-    lettwenty =20;
+    let twenty =20;
 
-lettwenty_one:i32= twenty +1;
+    let twenty_one:i32= twenty +1;
 
-    letfloats_okay =21.0;
+    let floats_okay =21.0;
 
-    letone_million =1_000_000;
+    let one_million =1_000_000;
 
     println!("{}; {}; {}; {}", twenty, twenty_one, floats_okay, one_million)
 
 }
+```
 
 Underscores can be used to increase readability, they are ignored by the compiler.
 
 Rust also has built-in support for numeric literals that allow you to define integers in base 2 (binary), base 8 (octal) and base 16 (hexadecimal).
 
+```rust
 fnmain() {
 
-    letthree =0b11;
+    let three =0b11;
 
-    letthirty =0o36;
+    let thirty =0o36;
 
-    letthree_hundred =0x12C;
+    let three_hundred =0x12C;
 
     println!("base 10: {} {} {}", three, thirty, three_hundred);
 
@@ -77,20 +80,22 @@ fnmain() {
     println!("base 16: {:x} {:x} {:x}", three, thirty, three_hundred);
 
 }
+```
 
 ![Screen_Shot_2020-05-05_at_8-26-42_AM.png](image/Screen_Shot_2020-05-05_at_8-26-42_AM.png)
 
+```rust
 fnmain() {
 
-    letneedle =42;
+    let needle =42;
 
-    lethaystack = [1,1,2,5,14,42,132,429,1430,4862];
+    let haystack = [1,1,2,5,14,42,132,429,1430,4862];
 
-    forreferenceinhaystack.iter() {
+    for reference in haystack.iter() {
 
-        letitem = *reference;
+        let item = *reference;
 
-        ifitem == needle {
+        if item == needle {
 
             println!("{}", item);
 
@@ -105,38 +110,40 @@ fnmain() {
     }
 
 }
-
-The** unary * operator** is called the **dereference operator**. The operator follows the reference and returns its referent. Item is a reference to some number within haystack. *item == needle asks Rust to compare the value referred to by item against needle.
+```
+The **unary * operator** is called the **dereference operator**. The operator follows the reference and returns its referent. Item is a reference to some number within haystack. *item == needle asks Rust to compare the value referred to by item against needle.
 
 **Type-aware control flow with match**
 
+```rust
 fnmain() {
 
-// let needle = 42;
+    // let needle = 42;
 
-lethaystack = [1,1,2,5,14,42,132,429,1430,4862];
+    let haystack = [1,1,2,5,14,42,132,429,1430,4862];
 
-forreferenceinhaystack.iter() {
+    for reference in haystack.iter() {
 
-letitem = *reference;
+    let item = *reference;
 
-letresult =matchitem {//match is an expression that returns a value that can be bound to a variable
+    let result = match item {//match is an expression that returns a value that can be bound to a variable
 
-42|132=>"hit!",
+        42|132=>"hit!",
 
-_ =>"miss",
+        _ =>"miss",
 
-};
+        };
 
-ifresult =="hit!"{
+    if result =="hit!"{
 
-println!("{}: {}", item, result)
+        println!("{}: {}", item, result)
 
-}
-
-}
+    }
 
 }
+
+}
+```
 
 Instead of using if/else block's, you can use Rust's **match** keyword. The match keyword plays an important role within the Rust language. Many control structures, such as looping, are defined in terms of match under the hood.
 
@@ -168,9 +175,10 @@ Lastly **generic types can have some constraints** placed on them. To do this, p
 
 Trait bounds refer to **traits**, a language feature that is analogous to **an interface** or protocol in other domains. Traits are discussed in depth later on. 
 
+```rust
 usestd::ops::{Add};
 
-fnadd<T: Add<Output = T>>(i:T, j:T) -> T {
+fn add<T: Add<Output = T>>(i:T, j:T) -> T {
 
     i + j
 
@@ -178,19 +186,20 @@ fnadd<T: Add<Output = T>>(i:T, j:T) -> T {
 
 fnmain() {
 
-    let(a, b) = (1.2,3.4);//bind multiple variables with pattern matching
+    let (a, b) = (1.2,3.4);//bind multiple variables with pattern matching
 
-    let(x, y) = (10,20);
+    let (x, y) = (10,20);
 
-    letc =add(a,b);    
+    let c =add(a,b);    
 
-    letz =add(x,y);
+    let z =add(x,y);
 
     println!("{} + {} = {}", a,b,c);
 
     println!("{} + {} = {}", x,y,z);
 
 }
+```
 
 Here are a few principles that should assist when looking at Rust code:Here are a few principles that should assist when looking at Rust code:
 
@@ -201,27 +210,27 @@ Here are a few principles that should assist when looking at Rust code:Here are 
 
 **Grep-lite-v1 - Let's talk about Strings**
 
+```rust
 fnmain() {
 
-letsearch_term ="picture";
+let search_term ="picture";
 
-letquote ="Every face, every shop, bedroom window, public house, and
+    let quote ="Every face, every shop, bedroom window, public house, and
 
-dark square is a picture feverishly turned -- in search of what?
+    dark square is a picture feverishly turned -- in search of what?";
 
-It is the same with books. What do we seek through millions of pages?";
+    for line in quote.lines() {
 
-forlineinquote.lines() {
+        if line.contains(search_term) {
 
-ifline.contains(search_term) {
+        println!("{}", line);
 
-println!("{}", line);
+        }
 
-}
-
-}
+    }
 
 }
+```
 
 Rust's strings can do a lot by themselves. Multi-lined strings do not require special syntax. Objects in Rust have methods, strings provide an iterator of lines. 
 
@@ -247,21 +256,20 @@ str is usually seen in its reference form &str and &str is referred to as a "str
 
 We have two options for adding line numbers, we can use a mutable type, by using the **mut keyword**. 
 
+```rust
 fnmain() {
 
-    letsearch_term ="picture";
+    let search_term ="picture";
 
-    letquote ="Every face, every shop, bedroom window, public house, and
+    let quote ="Every face, every shop, bedroom window, public house, and
 
-    dark square is a picture feverishly turned -- in search of what?
+    dark square is a picture feverishly turned -- in search of what?";
 
-    It is the same with books. What do we seek through millions of pages?";
+    let mutline_num:usize=1;
 
-    letmutline_num:usize=1;
+    for line in quote.lines() {
 
-    forlineinquote.lines() {
-
-        ifline.contains(search_term) {
+        if line.contains(search_term) {
 
             println!("{}: {}",line_num, line);
 
@@ -272,30 +280,30 @@ fnmain() {
     }
 
 }
-
+```
 Or we can use the enumerate method. 
 
+```rust
 fnmain() {
 
     letsearch_term ="picture";
 
     letquote ="Every face, every shop, bedroom window, public-house, and
 
-    dark square is a picture feverishly turned--in search of what?
+    dark square is a picture feverishly turned--in search of what?";
 
-    It is the same with books. What do we seek through millions of pages?";
+    for(idx, line) in quote.lines().enumerate() {
 
-    for(idx, line)inquote.lines().enumerate() {
+        if line.contains(search_term) {
 
-        ifline.contains(search_term) {
-
-            letline_num = idx +1;
+            let line_num = idx +1;
 
             println!("{}: {}", line_num, line);      }
 
     }
 
 }
+```
 
 **Lists with Arrays, Slices and Vectors**
 
@@ -307,31 +315,32 @@ The two types of lists that you will work with are arrays and vectors.
 
 Both of these variations support providing a type signature.
 
-fnmain() {
+```rust
+fn main() {
 
-    letone= [1,2,3];
+    let one= [1,2,3];
 
-    lettwo: [u8;3] = [1,2,3];
+    let two: [u8;3] = [1,2,3];
 
-    letblank1 = [0;3];
+    let blank1 = [0;3];
 
-    letblank2: [u8;3] = [0;3];
+    let blank2: [u8;3] = [0;3];
 
-    letarrays = [one, two, blank1, blank2];
+    let arrays = [one, two, blank1, blank2];
 
-    forain&arrays {
+    for a in &arrays {
 
         print!("{:?}: ", a);
 
-        fornina.iter() {
+        for n in a.iter() {
 
             print!("\t{} + 10 = {}", n, n+10);
 
         }
 
-        letmutsum =0;
+        let mutsum =0;
 
-        foriin0..a.len() {
+        for i in 0..a.len() {
 
             sum += a[i];
 
@@ -344,7 +353,7 @@ fnmain() {
     }
 
 }
-
+```
 Arrays are a simple data structure from the **machine's point of view**. They are **a contiguous block of memory with elements of a uniform type.**
 
 Arrays can still cause some confusion though. The notation can be confusing. [T; n] describes an array's type where T is the elements' type and n is a non-negative integer. It's easy to confuse with slices [T] which do not have a compile-time length.
@@ -367,43 +376,38 @@ To minimize code complexity, we will use a two pass strategy. In the first pass,
 
 The code example below is complex. The most confusing syntax is probably Vec<Vec<(usize, String)>>, which appears on line 15. This is a vector of vectors, where T is of** type (usize, String)**. This is a **tuple** and will be used to store line numbers along with the text that's near matches. 
 
-fnmain() {
+```rust
+fn main() {
 
     // PARAMETERS
 
-    letcontext_lines =2;
+    let context_lines =2;
 
-    letneedle ="oo";
+    let needle ="oo";
 
-    lethaystack ="Every face, every shop,
+    let haystack ="Every face, every shop,
 
     bedroom window, public-house, and
 
-    dark square is a picture
-
-    feverishly turned--in search of what?
-
-    It is the same with books.
-
-    What do we seek
-
-    through millions of pages?";
+    dark square is a picture";
 
     //Initialization
 
-    letmuttags :Vec<usize> =Vec::new();// tags will hold line numbers where matches occur
+    let muttags :Vec<usize> =Vec::new();
+    // tags will hold line numbers where matches occur
 
-    letmutctx:Vec<Vec<(usize,String)>> =Vec::new();// ctx contains a vector per match to hold that match's context lines
+    let mutctx:Vec<Vec<(usize,String)>> =Vec::new();
+    // ctx contains a vector per match to hold that match's context lines
 
     // Pass 1: find matches
 
-    for(i, line)inhaystack.lines().enumerate() {
+    for(i, line)in haystack.lines().enumerate() {
 
-        ifline.contains(needle) {
+        if line.contains(needle) {
 
             tags.push(i);
 
-            letv =Vec::with_capacity(2* context_lines +1);// reserves space for n items
+            let v =Vec::with_capacity(2* context_lines +1);// reserves space for n items
 
             ctx.push(v);
 
@@ -411,7 +415,7 @@ fnmain() {
 
     }
 
-    iftags.len() ==0{
+    if tags.len() ==0{
 
         return;// nothing was found!
 
@@ -419,19 +423,19 @@ fnmain() {
 
     //Pass 2: grab lines
 
-    for(i, line)inhaystack.lines().enumerate() {// For each tag, at every line, check to see if we are nearby a match. When we are, add that line to the relevant Vec<T>
+    for(i, line)in haystack.lines().enumerate() {// For each tag, at every line, check to see if we are nearby a match. When we are, add that line to the relevant Vec<T>
 
-        for(j, tag)intags.iter().enumerate() {
+        for(j, tag)in tags.iter().enumerate() {
 
-            letlower_bound = tag.saturating_sub(context_lines);// usize.saturating_sub is subtraction that returns 0 on integer underflow rather than crashing the program
+            let lower_bound = tag.saturating_sub(context_lines);// usize.saturating_sub is subtraction that returns 0 on integer underflow rather than crashing the program
 
-            letupper_bound = tag + context_lines;
+            let upper_bound = tag + context_lines;
 
             if(i >= lower_bound) && (i <= upper_bound) {
 
-                letline_as_string =String::from(line);// copy line into a new String and store that locally for each match
+                let line_as_string =String::from(line);// copy line into a new String and store that locally for each match
 
-                letlocal_ctx = (i, line_as_string);
+                let local_ctx = (i, line_as_string);
 
                 ctx[j].push(local_ctx);
 
@@ -443,11 +447,11 @@ fnmain() {
 
 // Output
 
-    forlocal_ctxinctx.iter() {
+    for local_ctx in ctx.iter() {
 
-        for&(i,refline)inlocal_ctx.iter() {// ref line informs the compiler that we wish to borrow this value, rather than move it.
+        for &(i,refline) in local_ctx.iter() {// ref line informs the compiler that we wish to borrow this value, rather than move it.
 
-            letline_num = i +1;
+            let line_num = i +1;
 
             println!("{}: {}", line_num, line);
 
@@ -456,7 +460,7 @@ fnmain() {
     }
 
 }
-
+```
 **Including Third Party Code**
 
 We would like to include the regex crate into our grep-lite program. **Crates** are the name the Rust community uses where other may use terms such as package, distribution or library. 
