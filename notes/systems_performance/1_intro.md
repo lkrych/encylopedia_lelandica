@@ -29,3 +29,17 @@ Performance analysis is typically viewed from two different perspectives:
 2. **Workload Analysis** -  commonly employed by application developers, they take a top down approach of looking at the software stack. They investigate the application deployed on top of the hardware.
 
 ## Performance is difficult
+
+Systems performance engineering can be a difficult field. The number one reason is that **performance is subjective**. 
+
+Things tend to either work or not in typical software development. That's not the case with performance. What may be considered "bad" performance by one user will be considered "good" by another.
+
+**Subjective performance can be made objective by defining clear goals**, such as having a target average response time, or requiring a percentage of requests to fall within a certain latency. 
+
+The **second reason that performance engineering is hard is that the systems are complex**. If you are solely focused on application engineering, it's pretty easy to figure out where to start. With the code you wrote. With systems performance engineering, you need to think about the problem holistically and use clues to figure out where to start. 
+
+Performance issues might also ber caused by a complex characteristic of a production workload. These cases may never be reproducible in a lab environment or only intermittently so :( .
+
+Additionally, in complex software systems there are typically many performance issues! Thus, **the goal of a performance engineer is to identify which issues matter the most** in a system.
+
+To do this, **the performance engineer must quantify the magnitude of issues**. A metric well-suited to performance quantification is **latency**. Latency is a **measure of time spent waiting**. Be careful! Latency can be ambiguous without qualifying terms. For instance, within networking, latency can mean the time for a connection to be established but not the data transfer time.
