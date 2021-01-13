@@ -19,7 +19,7 @@
 
 Systems performance studies the performance of an entire computer system, including all major software and hardware components. 
 
-![](resources/systems_software_stack.png)
+![](resources/1_intro/systems_software_stack.png)
 
 Anything in the data path can affect systems performance, so **if you don't have a diagram of your environment showing the data path, find one or draw it yourself**!
 
@@ -65,7 +65,7 @@ When trying to discern a problem, **observability tools should be tried first wh
 
 Some counters are cumulative. These counters can be read at different times by tools for calculating statistics: the rate of change over time, the average, percentiles, etc.
 
-![](resources/performance_instrumentation.png)
+![](resources/1_intro/performance_instrumentation.png)
 
 A **metric** is **a statistic that has been selected to evaluate or monitor a target**. Most companies use monitoring agents to record selected statistics at regular intervals and chart them in a graphical interface for easy reading. Monitoring software can also support creating custom alerts from these metrics.
 
@@ -79,7 +79,7 @@ CPUs are a common profiling target. The commonly used method to profile CPUs inv
 
 An effective visualization of CPU profiles is **flame graphs**. CPU flame graphs **can help you find more performance wins than any other tool aside from metrics**.
 
-![](resources/flame_graph.png)
+![](resources/1_intro/flame_graph.png)
 
 The **widths are proportional to the CPU time spent**, and the **vertical axis shows the code path**.
 
