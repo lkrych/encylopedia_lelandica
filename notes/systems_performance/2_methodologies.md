@@ -7,6 +7,7 @@
 * [Useful Concepts](#useful-concepts)
     * [Latency](#latency)
     * [Time Scales](#time-scales)
+    * [Trade-offs and Where to tune](#trade-offs-and-where-to-tune)
 
 ## Introduction
 
@@ -80,3 +81,26 @@ It helps to have an **instinct about time** and reasonable expectations for late
 | Physical System reboot | 5m | 32 millennia |
 
 **CPUs are amazing**. The time it takes light to travel 0.5 m, maybe the distance from your computer screen to your eyeballs is about 1.7 ns. During the same time, a modern CPU may have execute 5 CPU cycles and processed some instructions!
+
+### Trade-offs and Where to tune
+
+A common trade-off in performance tuning is the one **between CPU and memory**, as memory can be used to cache results, it reduces CPU usage.  On modern system with an abundance of CPU, the trade may work the other way: CPU time may be spent compressing data to reduce memory usage.
+
+**Tunable parameters often come with trade-offs**. 
+
+For instance, with block size (file system record size). Small block sizes, close to the application I/O size, will perform better for random I/O workloads and make more efficient use of the file system cache. Large block sizes will improve streaming workloads.
+
+Another trade-off is network buffer size, small buffer sizes will reduce the memory overhead per connection, helping the system scale. Large sizes will improve network throughput.
+
+One question might be in your head, where you should begin looking to tune something? The correct answer is that you **performance tuning is most effective when done closest to where the work is performed**.
+
+**Example Targets of Tuning**
+
+| Layer | Example Tuning Targets |
+| ---- | ------ |
+| Application |  Application logic, request queue sizes, database queries performed |
+| Database | Database table layout, indexes, buffering |
+| System Calls | Memory-mapped or read/write, sync of async I/O flags |
+| File System | Record size, cache size, journaling |
+| Storage | RAID level, number and type of disks |
+
