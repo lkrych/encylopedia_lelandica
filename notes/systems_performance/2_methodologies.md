@@ -104,3 +104,33 @@ One question might be in your head, where you should begin looking to tune somet
 | File System | Record size, cache size, journaling |
 | Storage | RAID level, number and type of disks |
 
+### Point-in-Time Recommendations
+
+The performance characteristics of ann environment change over time. Thus, **performance recommendations**, especially the values of tunable parameters, **are valid only at a specific point in time**. 
+
+### Load vs. Architecture
+
+An application can perform badly due to an issue with how it was designed (architecture and implementation) as well as perform badly simply due to too much load being applied, resulting in queueing and long latencies.
+
+If analysis of the architecture shows queueing of work but no problems with how the work is performed, the issue might be due to load. In cloud computing, you can scale horizontally to handle the work.
+
+Ann issue of architecture might be using a single-threaded application that is busy on the CPU while requests are queuing and other other CPUs are idle. In this case, performance is limited by the application's single-threaded architecture.
+
+
+### Scalability
+
+The **performance of a system under increasing load** is its **scalability**.
+
+![](resources/2_methodologies/scalability.png)
+
+The above image shows a typical throughput profile as a system's load increases. For some period, linear scalability is observed. A point is then reached, where the the **contention for a resource begins to degrade throughput**. 
+
+This point can be described as a knee point, it is the boundary between two functions. Beyond this point, the throughput profile departs from linear scalability as contention for the resource increases.
+
+This point may occur when a component reaches 100% utilization: the saturation point.
+
+An example system that would exhibit this profile is an application that performs heavy computation, with more load added as additional threads. As the CPUs approach 100% utilization, response time begins to degrade as CPU scheduler latency increases. After peak performance, at 100% utilization, throughput begins to decrease as more threads are added. This causes more context switches, which consume CPU resources and cause less actual work to be completed.
+
+![](resources/2_methodologies/performance_degradation.png)
+
+The degradation of performance for nonlinear scalability is graphed above. Higher response time is bad. The fast degradation profile may occur for memory load, when the system begins moving memory pages to disk to free main memory. The slow degradation profile may occur for CPu load.
