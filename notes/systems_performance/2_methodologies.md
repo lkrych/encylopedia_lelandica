@@ -255,8 +255,46 @@ In **cloud computing environments**, **system resource controls may be in place*
 
 ### Workload Characterization
 
+Workload characterization is a simple and effective method for **identifying a class of issues due to load**.
+
+Workloads can be characterized by the following questions:
+
+1. **Who is causing the load?** Process ID, User ID, remote IP address
+2. **Why is the load being called?** Code Path, stack trace?
+3. **What are the load characteristics?** IOPS, throughput, direction, type?
+4. **How is the load changing over time?** Is there a daily pattern?
+
+**The best performance wins are the result of eliminating unnecessary work.** Characterizing workload can identify these issues.
+
 ### Five Whys
+
+This is very simple but often very effective. Ask yourself "why?" then answer the question, and repeat this process five or more times.
+
+1. A database has begun to perform poorly for many queries. Why?
+2. It is delayed by disk I/O due to memory paging. Why?
+3. Database memory usage has grown too large. Why?
+4. The allocator is consuming more memory then it should. Why?
+5. The allocator has a memory fragmentationn issue.
 
 ### Cache Tuning
 
+Applications and Operating Systems employ multiple caches to improve I/O performance from the application down to the disks. Here is a general strategy for tuning each cache level.
+
+1. Aim to cache as high in the stack as possible, closer to where the work is performed. This location should also have metadata available, which can be used to improve the cache retention policy.
+2. Check that the cache is enabled and working.
+3. Check that the cache hit/miss ratios and miss rate
+4. If the cache size is dynamic, check its current size.
+5. Tune the cache for the workload. This task depends on available  cache tunable parameters
+6. Tune the workload for the cache.
+
 ### Performance Mantras
+
+This is general advice for how to best improve performance.
+
+1. **Don't do it**: eliminate unnecessary work
+2. **Do it, but don't do it again**: caching
+3. **Do it less**: tune refreshes, polling or updates to happen less frequently
+4. **Do it later**: write-back caching
+5. **Do it when they're not looking**: Schedule work to run during off-peak hours
+6. **Do it concurrently**: switch from single-threaded to multi-threaded.
+7. **Do it more cheaply**: Buy faster hardware.
