@@ -15,19 +15,15 @@
     * [Utilization](#utilization)
     * [Saturation](#saturation)
     * [Caching](#caching)
-* [Methodologies]
-    * [Anti-Methods]()
-    * [Ad-hoc Checklist]()
-    * [Problem Statement]()
-    * [USE Method]()
-    * [Workload Characterization]()
-    * [Five Whys]()
-    * [Cache Tuning]()
-    * [Performance Mantras]()
-* [Modeling]
-* [Statistics]
-* [Monitoring]
-
+* [Methodologies](#methodologies)
+    * [Anti-Methods](#anti-methods)
+    * [Ad-hoc Checklist](#ad-hoc-checklist)
+    * [Problem Statement](#problem-statement)
+    * [USE Method](#use-method)
+    * [Workload Characterization](#workload-characterization)
+    * [Five Whys](#five-whys)
+    * [Cache Tuning](#cache-tuning)
+    * [Performance Mantras](#performance-mantras)
 ## Introduction
 
 When learning anything new, you need to learn what something is before you can start working it into your mental model of how things work. Computer systems are no different. You can graduate from school with a good understanding of how an operating system works, but where do you learn how to manage one? This is where experience comes in.
