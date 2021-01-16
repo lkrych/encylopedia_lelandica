@@ -15,7 +15,18 @@
     * [Utilization](#utilization)
     * [Saturation](#saturation)
     * [Caching](#caching)
-* [Methodology]
+* [Methodologies]
+    * [Anti-Methods]()
+    * [Ad-hoc Checklist]()
+    * [Problem Statement]()
+    * [USE Method]()
+    * [Workload Characterization]()
+    * [Five Whys]()
+    * [Cache Tuning]()
+    * [Performance Mantras]()
+* [Modeling]
+* [Statistics]
+* [Monitoring]
 
 ## Introduction
 
@@ -189,4 +200,63 @@ One important metric for **understanding cache performance** is each cache's **h
 
 The performance difference between 98% and 99% cache hit rate is much greater than between 10% and 11%. This is nonlinear because of the difference in speed between cache hits and misses. The noticeable difference in operations that hit the cache will be much more noticeable at 98% than at 10%.
 
-## Methodology
+## Methodologies
+
+Methodologies help you approach complex systems by showing when to start you analysis and suggesting an effective procedure to follow.
+### Anti-Methods
+
+We're going to begin this discussion with **things you should not do**. 
+
+**Streetlight Anti-Method** - A user analyzes performance by choosing familiar or random observability tools. This approach is hit or miss and can overlook many types of issues.
+
+**Random Change Anti-Method** - A user randomly guesses where the problem may be and then changes things until it goes away. While this method may unearth something it is too tie-consuming and also result in tuning that doesn't make any sense.
+
+**Blame Someone Else Anti-Method** - Instead of investigating an issue, this methodology makes the issues someone elses problem. This can be identified by a lack of data leading to a hypothesis that it is someone else's problem!
+
+### Ad-hoc Checklist
+
+Going through a canned checklist is a common methodology. It can actually provide a lot of value, especially if you know what you are looking at. However, the problem with them is that they are typically point-in-time recommendations and these checklists need to be refreshed to stay current. That being said, they are an effective way to ensure that everyone knows how to check for common issues.
+
+### Problem Statement
+
+Answering the following questions should be the **first thing you do when responding to an issue**:
+
+1. What makes you think there is a performance problem?
+2. Has this system ever performed well?
+3. What changed recently? Software? Hardware? Load?
+4. Can the problem be expressed in terms of latency?
+5. Does the problem affect other people or applications?
+6. What is the environment? What software and hardware are used?
+
+### USE Method
+
+The USE method stands for utilization, saturation and errors method. It should be used early in an investigation to identify systemic bottlenecks. 
+
+It's pretty simple: **for every resource check utilization, saturation and errors**. 
+
+Always **check errors first** because they are quick to interpret, and it can be time-efficient to rule them out.
+
+Though it may seem counterintuitive, **a short burst of high utilization can cause saturation and performance issues**, even though overall utilization is low over a long interval. Some monitoring tools report utilization over 5 minute intervals, these long intervals might disguise short periods of 100% utilization.
+
+To decide which system components to look at, draw a functional block diagram that shows how data flows through the system. Check each of the points in the system.
+
+| Resource | Type | Metric |
+| ---- | ----- | ------|
+| CPU    | Utilization   | CPU utilization either per CPU or system-wide   |
+| CPU   | Saturation     | Run queue length, scheduler latency, CPU pressure (Linux PSI) | 
+| Memory | Utilization | Available free memory (system-wide) |
+| Memory    | Saturation | Swapping, page scanning, out-of-memory events, memory pressure (Linux PSI) |
+| Network Interface    | Utilization  | Receive throughput/max bandwidth, transmit throughput/max bandwidth |
+| Storage Device I/O    | Utilization  | device busy percent |
+| Storage Device I/O    | Saturation  | wait queue length, I/O pressure (Linux PSI) |
+| Storage Device I/O | Errors | Device errors ("soft", "hard") |
+
+In **cloud computing environments**, **system resource controls may be in place** to limit or throttle tenants who are sharing one system. This may limit memory, CPU, disk I/O, and network I/O.
+
+### Workload Characterization
+
+### Five Whys
+
+### Cache Tuning
+
+### Performance Mantras
