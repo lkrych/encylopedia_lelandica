@@ -5,6 +5,7 @@ A centralized spot to view all of my notes 📚
 ## Table of Contents
 * Computer Systems
     * [Computer Systems: A Programmer's Perspective](notes/computer_systems/README.md)
+    * [Systems Performance](notes/systems_performance/README.md)
 * Operating Systems
     * [Linux Notes](https://github.com/lkrych/linux_notes)
     * [GATech -  Graduate Introduction to Operating Systems](https://github.com/lkrych/gios_notes)
