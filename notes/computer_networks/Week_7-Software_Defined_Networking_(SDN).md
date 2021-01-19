@@ -5,9 +5,11 @@ The need to separate the control from the data plane, coupled with increasing ch
 SDN arose as part of the process to **make computer networks more programmable**. Computer networks are complex and difficult to manage for two main reasons:
 
 1. **Diversity of equipment on the network**
-2. **Proprietary technologies for the equipment **
+2. **Proprietary technologies for the equipment**
 
-SDN offers new ways to redesign networks to make them more manageable. It employs a simple idea -** separation of tasks**, to divide the network into two planes - **control plane **(how to handle traffic)** and data plane **(forwards traffic according to decisions the control plane makes).
+SDN offers new ways to redesign networks to make them more manageable. It employs a simple idea -**separation of tasks**, to divide the network into two planes:
+1.  **control plane** - how to handle traffic
+2. **data plane**  - forwards traffic according to decisions the control plane makes .
 
 SDN **consolidates the control plane** so that a single software control program controls multiple data plane elements. It does this using a well-defined API, **OpenFlow**. 
 
@@ -34,9 +36,9 @@ The history of SDN can be divided into three phases:
 
 **Control Plane and Data Plane Separation**
 
-**Forwarding **is one of the most common, yet important functions of the network layer. When a router receives a packet at its input link, it must **determine which output link that packet should be sent through**. In addition to forwarding, a router can block a packet, or duplicate a packet to send it out on multiple links. Since forwarding is a local function for routers, it usually takes place in nanoseconds and is implemented in the hardware: that is, it is **a function of the data plane**.
+**Forwarding** is one of the most common, yet important functions of the network layer. When a router receives a packet at its input link, it must **determine which output link that packet should be sent through**. In addition to forwarding, a router can block a packet, or duplicate a packet to send it out on multiple links. Since forwarding is a local function for routers, it usually takes place in nanoseconds and is implemented in the hardware: that is, it is **a function of the data plane**.
 
-**Routing** involves **determining the path from the sender to the receiver** across the network, Routers rely on routing algorithms for this purpose. It is an end-to-end process for networks. It usually takes place in seconds and is implemented in the software, it is **a function of the control plane**. 
+**Routing** involves **determining the path from the sender to the receiver** across the network. Routers rely on routing algorithms for this purpose. It is an end-to-end process for networks. It usually takes place in seconds and is implemented in the software, it is **a function of the control plane**. 
 
 In a traditional approach, the routing algorithms and the forwarding function are closely coupled. The router will run routing algorithms, and from there it can construct the forwarding table which consults it for the forwarding function.
 
@@ -52,7 +54,7 @@ We have separation of functions, the routers are solely responsible for forwardi
 
 The main components of an SDN network are
 
-1. **The SDN-controlled network elements **
+1. **The SDN-controlled network elements**
 2. **The SDN controller**
 3. **The Network Control Applications**
 
@@ -83,7 +85,7 @@ An SDN controller can be broadly split into three layers:
 
 ![Screen_Shot_2020-03-01_at_1-33-55_PM.png](image/Screen_Shot_2020-03-01_at_1-33-55_PM.png)
 
-**Network-wide state-management layer **is the state maintained by the controller about the network. It includes any information about hosts, links, switches and other controlled elements in the network. It also includes copies of the flow tables of the switches.
+**Network-wide state-management layer** is the state maintained by the controller about the network. It includes any information about hosts, links, switches and other controlled elements in the network. It also includes copies of the flow tables of the switches.
 
 The **interface to the network-control application layer** is known as the **"northbound" interface.** This interface allows the controller to interact with applications that can read/write network state and flow tables into the state management layer. The controller can also notify applications send by the SDN-controlled devices.
 
