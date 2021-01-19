@@ -12,7 +12,7 @@ A centralized spot to view all of my notes 📚
     * [GATech - Advanced Operating Systems](https://github.com/lkrych/aos_notes)
     * [Three Easy Pieces (unfinished)](https://github.com/lkrych/cprogramming/tree/master/three_easy_pieces/my-intro)
 * Computer Networking
-    * [GATech - Computer Networks]((notes/computer_networks/README.md)
+    * [GATech - Computer Networks](notes/computer_networks/README.md)
     * [Network Programming In C](https://github.com/lkrych/network_programming/tree/master/beej)
     * [Network Utils](https://github.com/lkrych/network_programming/blob/master/network_cheatsheet.md)
 * Security
