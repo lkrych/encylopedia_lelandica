@@ -1,8 +1,9 @@
 # Introduction to Software Defined Networks
 
 ## Table of Contents
-* [Introduction]()
-* [Terminology]()
+* [Introduction](#introduction)
+* [Terminology](#terminology)
+* [Modern Data Centers](#modern-data-centers)
 
 ## Introduction
 
@@ -27,3 +28,21 @@ A **switch** is a **device that receives information on one of its ports and tra
 A **router** is **a packet switch used to separate subnets**. A subnet is a network consisting of a set of hosts that share the same network prefix. A network prefix consists of the most significant bits of the IP address. A prefix may be of varying length. Usually all the hosts on a subnet reside on the same LAN>
 
 The term **line rate** refers to the **bandwidth** of the communication medium connected to a port on a switch. When we say that a switch handles packets at line rate, this means it is capable of handling a continuous stream of packets arriving on that part at that bandwidth.
+
+## Modern Data Centers
+
+Data centers are the organizational unit used to serve high volumes of traffic. They are composed of a very large number of servers arranged into organized rows of racks of servers. 
+
+Over time, the demand for efficiency drove the migration of individual server computers into server blades, a stripped down server with a modular design optimized to minimize the use of physical space and energy. Racks of **blades are connected by Top-of-Rack switches**.
+
+<img src="/resources/data-center-network-topology.png">
+
+Physical servers an conceivably host twenty virtual machines. With a data center of 100,000 servers, this can mean an internal network of 2,000,000 hosts!
+
+So, let's paint a picture. In a traditionally-designed data center there are a large number of host computers that all communicate with each other via a set of communication protocols and networking devices designed to work over a large, disparate geographical area with unreliable communications. This isn't very efficient. 
+
+The environment in a data center is much more stable than the world imagined when first developing networking technology.
+
+Studies indicate that the majority of traffic in current data centers is **East-West traffic** (**traffic composed of packets sent from one host inside the data center to another host in the same data center**).
+
+The protocols designed to achieve robustness in the geographically wide-dispersed Internet require that routers spend more than thirty percent of their CPU cycles rediscovering and recalculating routes for a network topology in a highly static data center.
