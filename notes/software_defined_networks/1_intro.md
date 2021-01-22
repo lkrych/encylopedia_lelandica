@@ -4,6 +4,7 @@
 * [Introduction](#introduction)
 * [Terminology](#terminology)
 * [Modern Data Centers](#modern-data-centers)
+* [Traditional Switch Architecture](#traditional-switch-architecture)
 
 ## Introduction
 
@@ -35,7 +36,8 @@ Data centers are the organizational unit used to serve high volumes of traffic. 
 
 Over time, the demand for efficiency drove the migration of individual server computers into server blades, a stripped down server with a modular design optimized to minimize the use of physical space and energy. Racks of **blades are connected by Top-of-Rack switches**.
 
-<img src="/resources/data-center-network-topology.png">
+<img src="resources/data-center-network-topology.png">
+
 
 Physical servers an conceivably host twenty virtual machines. With a data center of 100,000 servers, this can mean an internal network of 2,000,000 hosts!
 
@@ -46,3 +48,19 @@ The environment in a data center is much more stable than the world imagined whe
 Studies indicate that the majority of traffic in current data centers is **East-West traffic** (**traffic composed of packets sent from one host inside the data center to another host in the same data center**).
 
 The protocols designed to achieve robustness in the geographically wide-dispersed Internet require that routers spend more than thirty percent of their CPU cycles rediscovering and recalculating routes for a network topology in a highly static data center.
+
+## Traditional Switch Architecture
+
+The various switching functions of a traditional switch are separated into three separate categories: **control, management, and data planes**. 
+
+<img src="resources/device-planes.jpg">
+
+The **vast majority of packets handled by the switch are by the data plane**. The **data plane consists of the various ports that are used for the reception and transmission of packets** and a **forwarding table** with its associated logic. The data plane assumes responsibility for **packet buffering, packet scheduling, header modification, and forwarding**. If an arriving packet's header is found in the forwarding table it will be subject to some header modification and then forwarded out without the intervention of the other planes.
+
+Not all packets can be handled this way. Sometimes this is simply because their information is not yet entered into the table, or because they belong to a control protocol that must be processed by the control plane.
+
+The **control plane's principal role is to keep current the information in the forwarding table** so that the data plane can independently handle as high a percentage of traffic as possible. The control plane is **responsible for processing a number of different control protocols** that may affect the forwarding table. 
+
+These protocol are sufficiently complex to use general purpose microprocessors and accompanying software in the control plane, whereas the **data plane logic can be crafted entirely in silicon**.
+
+Network administrators configure and monitor the switch through the management plane, which in turn extracts information or modifies data int he control and data planes as appropriate.
