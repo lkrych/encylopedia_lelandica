@@ -121,3 +121,18 @@ Thus, the look-up that occurs in a router is to match the destination address in
 
 In a traditional router, the **routing table is built primarily through the use of routing protocols**. There is a wide variety of these protocols, but they all serve the common purpose **allowing the router to autonomously construct a layer three forwarding table that can automatically and dynamically change** in the face of changes elsewhere in the network.
 
+The **Routing Information Protocol (RIP)** is a comparatively simple protocol that was widely deployed in small networks in the 90s. Each router in the RIP-controlled routing domain **periodically broadcasts its entire routing table** on all the interfaces. These **broadcasts include the hop count from the broadcasting router to each reachable network.** This sharing allows each router to compute the shortest path within the entire routing domain (also known as ann Autonomous System).
+
+In a stable network, eventually all of the routing tables will converge and the hop count can be used to determine the least-cost route to reach any network in that domain.
+
+RIP is a **distance-vector protocol**, where each routers uses the weighted hop count over one interface as its distance to that destination network. RIP **does not need to have a complete picture of the network topology** in order to make the distance-vector routing computation.
+
+This differs from the next two protocols, **Open Shortest Path First (OSPF)** and **Intermediate System to Intermediate System (IS-IS)**, both of **which maintain a complete and current view of the network topology**.
+
+Since the topology is known, the algorithms can represent each of the network entities as a graph. The **standard shortest-path algorithm, Dijkstra' algorithm, can be used to compute the shortest path to each reachable network from each router's perspective**.
+
+The shortest path is defined a the one with the lowest total cost. Cost can be assigned to edges in myriad ways, but bandwidth is an obvious one.
+
+The three protocols discussed earlier are concerned with optimizing routes within an AS. The Internet is composed of a large set of interconnected autonomous systems. The role of the **Border Gateway Protocol (BGP)**, is to reside at the periphery of the AS and **learn about networks that are reachable via peer routers in adjacent AS's**.
+
+**BGP is a path-vector protocol**, it does not maintain a complete view of the network topology. Unlike RIP, the metric it maintains is not a simple hop-count, but involves parameters such as network policies and rules as well as the distance to the destination network.
