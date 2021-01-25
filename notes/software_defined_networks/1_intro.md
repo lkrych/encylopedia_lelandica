@@ -73,3 +73,11 @@ Demand for increased speed led to improvements in media speed, which in turn mad
 
 ### Hardware Look-up Forwarding Tables
 
+The first major use of hardware acceleration in packet switching was via the use of **Application Specific Integrated Circuits (ASICs)** to perform **high-speed hashing functions** for table look-ups. ASICs are integrated circuits customized for a particular use.
+
+In the middle 1990's, advances in **Content Addressable Memory (CAM)** made it possible to perform very high speed lookups using destination address fields to find the output interface for high speed packet forwarding.
+
+Unlike RAM, in which the user supplies a memory address and the RAM returns the data word stored at that address, a **CAM is designed such that the user supplies a data word and the CAM searches its entire memory to see if that data word is stored anywhere**. If the data word is found, it returns a last of storage addresses where the word was found. It is the hardware embodiment of a hash table/associative array. CAMs are used at both layer 2 and layer 3. 
+
+### Generically Programmable Forwarding Rules
+
