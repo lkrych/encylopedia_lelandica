@@ -77,7 +77,47 @@ The first major use of hardware acceleration in packet switching was via the use
 
 In the middle 1990's, advances in **Content Addressable Memory (CAM)** made it possible to perform very high speed lookups using destination address fields to find the output interface for high speed packet forwarding.
 
-Unlike RAM, in which the user supplies a memory address and the RAM returns the data word stored at that address, a **CAM is designed such that the user supplies a data word and the CAM searches its entire memory to see if that data word is stored anywhere**. If the data word is found, it returns a last of storage addresses where the word was found. It is the hardware embodiment of a hash table/associative array. CAMs are used at both layer 2 and layer 3. 
+Unlike RAM, in which the user supplies a memory address and the RAM returns the data word stored at that address, a **CAM is designed such that the user supplies a data word and the CAM searches its entire memory to see if that data word is stored anywhere**. If the data word is found, it returns a last of storage addresses where the word was found. It is the hardware embodiment of a hash table/associative array. CAMs are used at both layer 2 and layer 3. Layer three address lookup is just more complicated sincne the devices look up the closest match. This means they need to use ternary content addressable memory which allows the use of a mask.
 
 ### Generically Programmable Forwarding Rules
+
+In reality there are many packets the need to be processed by a switch that need more complicated treatment than simply being forwarded on another interface different than the one that it has arrive on. For example, the packets that belong to control protocols need to be processed by the control plane.
+
+With the pressure to keep processing time fast, the idea of **programmable rules** came about. Programmable rules encode complex processing into rules that could be carried out by the forwarding engine. This allowed switches to implement more complex protocols at increasing line rates.
+
+<img src="resources/switching.png">
+
+The figure above shows the major functional blocks that a packet will transit as it is being forwarded by the switch. 
+
+1. Packet Receive - Create flow key for lookup in forward DB. 
+2. Ingress Filter - Apply inbound policy (discard certain packets, etc.)
+3. Packet Translation - Process address information and tags, rewriting the packet if necessary.
+4. Egress Filter - Apply outbound policy
+5. Packet Transmit - Manage outbound memory queues
+6. Switch OS - Receive packets from the outside that might influence forwarding behavior.
+
+The forwarding database can be influenced by the arrival of certain packets, such as when a new address is learned. The forwarding database will provide basic forwarding instructions as well as policy directives.
+
+Let's take a look at some forwarding table technology.
+
+### Layer 2 Control
+
+A layer two forwarding table is a look-up table **indexed by destination MAC address**, where the **table entry indicates which port on the switch should be used to forward a packet**.
+
+The original design of switches had the switch learn the sender's MAC address and location and populate its forwarding table with this new information. However, with the advent of **bridges**, **links between switches**, this solution could no longer work because there were often multiple paths that could reach a destination, and unless a single one was chosen predictably, infinite loops could be created.
+
+To address this problem, protocols were developed that allowed the bridge to learn MAC addresses dynamically, and to learn how to assign these ports in such a way as to automatically avoid loops.
+
+The **Spanning Tree Protocol** was designed specifically to prevent loops and thus address the problem touched on earlier. The protocol achieves this by having every switch computer a spanning tree, a data structure from a single root (Source MAC address) where there is exactly one path to every leaf on the tree.
+
+STP has since been superseded by the Shorted Path Bridging standard.
+### Layer 3 Control
+
+The router's most fundamental task **when it receives a packet is to determine if the packet should be forwarded out one of its interfaces** or if the packet needs some exception processing.
+
+In the former case, the layer three **destination address in the packet header is used to determine the output port** the packet should be forwarded to. Unless the destination is directly attached to the router, **the router does not need to know exactly where in the network the host is located**, it only needs to know the next hop router.
+
+Thus, the look-up that occurs in a router is to match the destination address in the packet with one of the networks in the forwarding table. Finding a match provides a next-hop router, which maps to a specific port.
+
+In a traditional router, the **routing table is built primarily through the use of routing protocols**. There is a wide variety of these protocols, but they all serve the common purpose **allowing the router to autonomously construct a layer three forwarding table that can automatically and dynamically change** in the face of changes elsewhere in the network.
 
