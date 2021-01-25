@@ -63,4 +63,13 @@ The **control plane's principal role is to keep current the information in the f
 
 These protocol are sufficiently complex to use general purpose microprocessors and accompanying software in the control plane, whereas the **data plane logic can be crafted entirely in silicon**.
 
-Network administrators configure and monitor the switch through the management plane, which in turn extracts information or modifies data int he control and data planes as appropriate.
+Network administrators configure and monitor the switch through the management plane, which in turn extracts information or modifies data in the control and data planes as appropriate.
+
+### Software-based Routing and Bridging
+
+Back in the good ol' days most routers were just general purpose Unix computers running software that inspected a packet that arrived on one interface and looked up the destination IP address in some efficiently searched data type like a tree or a hash. This data structure was called the **routing table**. Based on the entry found in the routing table, the packet would be transmitted on the indicated outbound interface.
+
+Demand for increased speed led to improvements in media speed, which in turn made it necessary to increase the speed of the router and bridge platforms. This led to the development of hardware lookup.
+
+### Hardware Look-up Forwarding Tables
+
