@@ -3,6 +3,7 @@
 ## Table of Contents
 * [Topology](#topology)
 * [Bandwidth vs Latency](#bandwidth-vs-latency)
+* [Data Encapsulation](#data-encapsulation)
 
 
 ## Topology
@@ -29,7 +30,9 @@ Network **bandwidth** is the **amount of data we can send over a network connect
 
 I like to think about this with an analogy of running. If you run a couple of miles, the most common metric for measuring your run is your average mile pace. Your bandwidth is your average mile pace. The amount of distance you can cover in an interval of time. 
 
-Often network bandwidths are advertised as their idealized bandwidth, ie, your internet service might be advertised as 250Mbps download, which means you should theoretically be able to download data at 250 megabit every second when connected to your internet service.
+Often network bandwidths are advertised as their idealized bandwidth, ie, your internet service might be advertised as 250Mbps download, which means you should theoretically be able to download data at 250 megabits every second when connected to your internet service.
+
+A common confusion when discussing network transmission rates is using bytes per second instead of bits per second. **Network transmission rates are measured in bits per second**. We use bytes per second when discussing the amount of data transferred. Thus, if your ISP advertises 100Mbps download rate, that doesn't mean you can download a 100MB file in one second. It means it will take 8 seconds, because 12.5 MB per second will be downloaded.
 
 Do you run at your top mile pace every time you go running, you wish! It's your best performance so it is usually only reached in rare occasions. Similarly, the bandwidth advertised by your ISP is under ideal conditions.
 
@@ -47,3 +50,7 @@ A web programmer can address latency in several ways:
 2. Optimize the request and response sizes.
 3. Incorporate a caching strategy.
 4. Take advantage of concurrency to reduce server-side blocking.
+
+## Data Encapsulation
+
+**Encapsulation** is the method of hiding implementation details or only making the relevant details available.
