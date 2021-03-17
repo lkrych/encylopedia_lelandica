@@ -24,3 +24,26 @@ Here are some brief notes about certain topologies that are worth noting:
 Most real world systems use a hybrid network topology that combines two or more basic topologies. Hybrid topologies are meant to improve reliability, scalability and flexibility by taking advantage of each basic topology's strengths and by limiting their disadvantages.
 
 ## Bandwidth vs Latency
+
+Network **bandwidth** is the **amount of data we can send over a network connection in an interval of time**.
+
+I like to think about this with an analogy of running. If you run a couple of miles, the most common metric for measuring your run is your average mile pace. Your bandwidth is your average mile pace. The amount of distance you can cover in an interval of time. 
+
+Often network bandwidths are advertised as their idealized bandwidth, ie, your internet service might be advertised as 250Mbps download, which means you should theoretically be able to download data at 250 megabit every second when connected to your internet service.
+
+Do you run at your top mile pace every time you go running, you wish! It's your best performance so it is usually only reached in rare occasions. Similarly, the bandwidth advertised by your ISP is under ideal conditions.
+
+Another important metric when thinking about computer networks is **latency**, the **measure of time** that passes **between sending a network resource and receiving a response**.
+
+Latency can be underappreciated by software engineers, but usually that's because it is complex to divvy up all the possible contributing factors to latency. Let's briefly address how latency can be contributed to in visiting a website:
+1. The network latency between the client and server.
+2. The time it takes to retrieve data from a data store.
+3. The time it takes to compile dynamic content on the server/client.
+
+**Keeping latency to a minimum will pay dividends by improving user experience.**
+
+A web programmer can address latency in several ways:
+1. **Reduce the distance** and number of hops ***between users and your service*** by using a CDN or cloud infrastructure to locate your service near your users.
+2. Optimize the request and response sizes.
+3. Incorporate a caching strategy.
+4. Take advantage of concurrency to reduce server-side blocking.
