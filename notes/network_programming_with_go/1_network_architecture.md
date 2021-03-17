@@ -53,4 +53,4 @@ A web programmer can address latency in several ways:
 
 ## Data Encapsulation
 
-**Encapsulation** is the method of hiding implementation details or only making the relevant details available.
+**Encapsulation** is the method of hiding implementation details or only making the relevant details available. A service layer is 
