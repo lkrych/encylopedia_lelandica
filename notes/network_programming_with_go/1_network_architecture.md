@@ -7,6 +7,9 @@
     * [Data Encapsulation](#data-encapsulation)
     * [TCP/IP Model](#tcp-ip-model)
 * [Resource Location](#resource-location)
+    * [IP addressing](#ip-addressing)
+    * [Network and Host IDs](#network-and-host-ids)
+    * [Subnets](#subnets)
 
 ## Network Architecture
 ## Topology
@@ -79,3 +82,29 @@ The TCP/IP model was designed using the **end-to-end principle**, whereby **each
 
 ## Resource Location
 
+## IP Addressing
+
+The **Internet Protocol (IP)** is a **set of rules that dictate the format of data sent over a network** -- specifically the Internet. **IP addresses** **identify nodes on a network at the internet layer** of the TCP/IP stack.
+
+
+**IPv4** is the fourth version of the Internet Protocol. IPv4 addresses are **32-bit numbers** arranged in four groups of 8 bits, called octets. The total range of 32-bit numbers limits us to just over four billion possible IPv4 addresses.
+
+<img src="./image/ipv4.png">
+
+We usually write IPv4 addresses in decimal format because it is easier to read as a human. Computers don't work with IP addresses this way though.
+
+### Network and Host IDs
+
+The 32 bits that compose an IPv4 address **represent two components: a network ID and a host ID.** 
+
+The **network ID** informs the network devices (routers) responsible for shuttling packets toward their destination about **the next appropriate hop in the forwarding**. A good analogy for the network ID is that it is like the US postal service's ZIP code. 
+
+Once the data reaches the destination network, the router uses the **host ID** to **deliver the data to the correct recipient**. A good analogy for the host ID is that it is like a street address.
+
+<img src="./image/network_and_host_ids.png">
+
+The network ID portion of an IPv4 address always starts with the left-most bit, and its size is determined by the network it belongs to. The remaining bits designate the host ID.
+
+### Subnets
+
+IPv4's network and host IDs allow engineers to subdivide the four billion IPv4 addresses into smaller groups. 
