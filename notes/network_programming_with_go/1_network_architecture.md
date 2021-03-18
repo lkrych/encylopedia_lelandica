@@ -9,7 +9,7 @@
 * [Resource Location](#resource-location)
     * [IP addressing](#ip-addressing)
     * [Network and Host IDs](#network-and-host-ids)
-    * [Subnets](#subnets)
+    * [Subnets and CIDR](#subnets-and-CIDR)
 
 ## Network Architecture
 ## Topology
@@ -105,6 +105,18 @@ Once the data reaches the destination network, the router uses the **host ID** t
 
 The network ID portion of an IPv4 address always starts with the left-most bit, and its size is determined by the network it belongs to. The remaining bits designate the host ID.
 
-### Subnets
+### Subnets and CIDR
 
-IPv4's network and host IDs allow engineers to subdivide the four billion IPv4 addresses into smaller groups. 
+IPv4's network and host IDs allow engineers to subdivide the four billion IPv4 addresses into smaller groups. These smaller networks are called **subnets**, and the IP addresses in these networks share the same network ID but have unique host IDs.
+
+You can allocate networks using a method known as **Classless Inter-Domain Routing (CIDR)**. In CIDR, you indicate the number of bits in the network ID of an address by appending a network prefix to each IP address, consisting of a forward slash and an integer.
+
+Though it's appended to the end of the IP address, **we call it a prefix** rather than a suffix because it indicates **how many of the IP address's most significant bits constitute the network ID**.
+
+Let's take a simple example. The address 127.32.14.5/16 indicates that the first 16 bits are the network ID, and the last 16 bits are the host ID. 
+
+<img src="./image/cidr.png">
+
+If you look at the image above you might notice that the number of usable hosts is two less than expected in each row. That's because **each network has two special addresses**. The first IP address in the network is the **network address** and the last IP address is the **broadcast address**.
+
+Take the address 127.168.0.0/16, the first IP address is 127.168.0.0, this is the network address. The last IP address is 127.168.255.255, this is the broadcast address. These special addresses are used for routing data between networks and broadcasting, respectively.
