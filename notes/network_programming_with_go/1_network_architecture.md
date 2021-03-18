@@ -1,11 +1,14 @@
-# Network Architecture
+# Network Architecture and Resource Location
 
 ## Table of Contents
-* [Topology](#topology)
-* [Bandwidth vs Latency](#bandwidth-vs-latency)
-* [Data Encapsulation](#data-encapsulation)
+* [Network Architecture](#network-architecture)
+    * [Topology](#topology)
+    * [Bandwidth vs Latency](#bandwidth-vs-latency)
+    * [Data Encapsulation](#data-encapsulation)
+    * [TCP/IP Model](#tcp-ip-model)
+* [Resource Location](#resource-location)
 
-
+## Network Architecture
 ## Topology
 
 The birds-eye view of nodes in a network is called the topology. A network's topology can be very simple (your LAN), to mind-bogglingly complex graph (the Internet). Some topologies don't share a direct connection between nodes but are able to exchange data.
@@ -73,3 +76,6 @@ The TCP/IP model was designed using the **end-to-end principle**, whereby **each
 2. **Transport Layer** - handles the transfer of data between two nodes. Most of our network applications rely on transport protocols to handle error detection, flow control, retransmission, and transport acknowledgement. TCP and UDP are the main transport protocols.
 3. **Internet Layer** - responsible for routing packets of data from upper layers between the origin node adn the destination node often over multiple networks and heterogenous media. Examples include IPv4, IPv6, ICMP, BGP, IPsec.
 4. **Link Layer** - Interface between the core TCP/IP protocols and physical media. The link layer's **Address Resolution Protocol (ARP)** translates a node's IP address to the MAC address of its network interface. The linnk layer embeds the MAC address in each frame's header before passing the frame onto the physical network.
+
+## Resource Location
+
