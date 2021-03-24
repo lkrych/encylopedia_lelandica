@@ -120,3 +120,39 @@ Let's take a simple example. The address 127.32.14.5/16 indicates that the first
 If you look at the image above you might notice that the number of usable hosts is two less than expected in each row. That's because **each network has two special addresses**. The first IP address in the network is the **network address** and the last IP address is the **broadcast address**.
 
 Take the address 127.168.0.0/16, the first IP address is 127.168.0.0, this is the network address. The last IP address is 127.168.255.255, this is the broadcast address. These special addresses are used for routing data between networks and broadcasting, respectively.
+
+It's important to remember that **these splits don't have to be clean**. Let's look at the network ID and host ID for 192.168.156.97/19.
+
+<img src="./image/unclean_split.png">
+
+The network ID is 192.168.128.0, the host ID is 0.0.28.97.
+
+Lastly, there are some **specific IP addresses that you should remember**. 
+1. 10.0.0.0/8
+2. 172.16.0.0/12
+3. 192.168.0.0/16
+**Have all been designated for use in local networks.**
+
+In addition, each host has the **127.0.0.0/8** subnet designated as its local subnet. Addresses in this subnet are local to the host and simply called **localhost**.  **Even if a computer is not on a network, it should still have ann address on the 127.0.0.0/8 subnet.**
+
+## Ports and Socket Addresses
+
+The operating system uses **ports** to **uniquely identify data transmission** between nodes **for the purpose of multiplexing the outgoing application data and demultiplexing the incoming data** back to the proper application. Ports are unsigned 16-bit integers.
+
+The combination of an **IP address and a port** number is a **socket address**.
+
+## Network Address Translation
+
+**Network Address Translation (NAT)** is a process that **allows numerous nodes to share the same public IPv4 address**. It requires a device that can keep track of incoming and outgoing traffic and properly route incoming traffic to the correct node.
+
+<img src="./image/nat.png">
+
+In the figure above, a NAT device receives a connection from the client socket address 10.0.0.3:50926 destined for a host on the internet. The NAT device opens up its own connection to the destination host using public IP address 1.2.3.4, preserving the client's socket address port.
+
+Then the NAT sends the request from the internal client to the destination host. It will receive the response on 1.2.3.4:50926 if port 50926 is not busy on the destination host.
+
+The NAT device keeps a table that maps internal IP to external request. This allows it forward the received request to the correct client.
+
+The important thing to remember here is that an internal node's IPv4 address is not visible to any nodes outside the NAT network segment.
+
+## Unicasting, Multicasting and Broadcasting
