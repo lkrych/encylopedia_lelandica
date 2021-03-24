@@ -10,6 +10,11 @@
     * [IP addressing](#ip-addressing)
     * [Network and Host IDs](#network-and-host-ids)
     * [Subnets and CIDR](#subnets-and-CIDR)
+* [Ports and Socket Addresses]()
+* [Ports and Socket Addresses](#ports-and-socket-addresses)
+* [Network Address Translation](#network-address-translation)
+* [Unicasting, Multicasting and Broadcasting](#unicasting-multicasting-and-broadcasting)
+* [Resolving the MAC address](#resolving-the-mac-address)
 
 ## Network Architecture
 ## Topology
