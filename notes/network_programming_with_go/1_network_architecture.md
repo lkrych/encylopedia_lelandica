@@ -156,3 +156,25 @@ The NAT device keeps a table that maps internal IP to external request. This all
 The important thing to remember here is that an internal node's IPv4 address is not visible to any nodes outside the NAT network segment.
 
 ## Unicasting, Multicasting and Broadcasting
+
+Sending packets from **one IP address to another IP address** is known as **unicast addressing**. 
+
+TCP/IP also supports **IP multicasting**. This means **sending a single message to a group of nodes**. Routers and switches will do the work of replicating the message that is sent.
+
+<img src="./image/multicast.png">
+
+**Broadcasting** is the ability to concurrently **deliver a message to all IP addresses in a network**. To do this, nodes on a network send packets to the broadcast address of a subnet. A network switch or router will then propagate the packets out to all IPv4 addresses in the subnet.
+
+<img src="./image/broadcast.png">
+
+Unlike multicasting, the nodes in a subnet don't first need to opt in to receive broadcast messages.
+
+## Resolving the MAC address
+
+Every network interface has a **MAC address** uniquely **identifying the node's physical connection to the network**.
+
+The MAC address is only relevant to the local network. **Routers cannot use a MAC address to route data across network boundaries.** Instead, they **route traffic across network boundaries using an IPv4 address.** Once a packet reaches the local network of a destination node, the router sends the data to the destination node's MAC address, and finally to the destination node's physical network connection.
+
+The **Address Resolution Protocol (ARP)**, finds **the appropriate MAC address for a given IPv4 address**. Nodes maintain ARP tables that map an IPv4 address to a MAC address. If a node does not have an entry in its ARP table for a destination IPv4 address, the node will send a request to the local network's broadcast address asking "who has this address?". 
+
+The destination node will receive the ARP request and respond with an ARP reply to the originating node. The originating node will then use the returned MAC address to send data.
