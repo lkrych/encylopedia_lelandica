@@ -7,14 +7,17 @@
     * [Data Encapsulation](#data-encapsulation)
     * [TCP/IP Model](#tcp-ip-model)
 * [Resource Location](#resource-location)
-    * [IP addressing](#ip-addressing)
+* [IP addressing](#ip-addressing)
     * [Network and Host IDs](#network-and-host-ids)
     * [Subnets and CIDR](#subnets-and-CIDR)
-* [Ports and Socket Addresses]()
-* [Ports and Socket Addresses](#ports-and-socket-addresses)
-* [Network Address Translation](#network-address-translation)
-* [Unicasting, Multicasting and Broadcasting](#unicasting-multicasting-and-broadcasting)
-* [Resolving the MAC address](#resolving-the-mac-address)
+    * [Ports and Socket Addresses](#ports-and-socket-addresses)
+    * [Network Address Translation](#network-address-translation)
+    * [Unicasting, Multicasting and Broadcasting](#unicasting-multicasting-and-broadcasting)
+    * [Resolving the MAC address](#resolving-the-mac-address)
+* [IPv6 Addressing](#ipv6-addressing)
+    * [Network and Host Addresses](#network-and-host-addresses)
+    * [IPv6 Address Categories](#ipv6-address-categories)
+    * [Why use IPv6?](#why-use-ipv6)
 
 ## Network Architecture
 ## Topology
@@ -140,13 +143,13 @@ Lastly, there are some **specific IP addresses that you should remember**.
 
 In addition, each host has the **127.0.0.0/8** subnet designated as its local subnet. Addresses in this subnet are local to the host and simply called **localhost**.  **Even if a computer is not on a network, it should still have ann address on the 127.0.0.0/8 subnet.**
 
-## Ports and Socket Addresses
+### Ports and Socket Addresses
 
 The operating system uses **ports** to **uniquely identify data transmission** between nodes **for the purpose of multiplexing the outgoing application data and demultiplexing the incoming data** back to the proper application. Ports are unsigned 16-bit integers.
 
 The combination of an **IP address and a port** number is a **socket address**.
 
-## Network Address Translation
+### Network Address Translation
 
 **Network Address Translation (NAT)** is a process that **allows numerous nodes to share the same public IPv4 address**. It requires a device that can keep track of incoming and outgoing traffic and properly route incoming traffic to the correct node.
 
@@ -160,7 +163,7 @@ The NAT device keeps a table that maps internal IP to external request. This all
 
 The important thing to remember here is that an internal node's IPv4 address is not visible to any nodes outside the NAT network segment.
 
-## Unicasting, Multicasting and Broadcasting
+### Unicasting, Multicasting and Broadcasting
 
 Sending packets from **one IP address to another IP address** is known as **unicast addressing**. 
 
@@ -174,7 +177,7 @@ TCP/IP also supports **IP multicasting**. This means **sending a single message 
 
 Unlike multicasting, the nodes in a subnet don't first need to opt in to receive broadcast messages.
 
-## Resolving the MAC address
+### Resolving the MAC address
 
 Every network interface has a **MAC address** uniquely **identifying the node's physical connection to the network**.
 
@@ -183,3 +186,77 @@ The MAC address is only relevant to the local network. **Routers cannot use a MA
 The **Address Resolution Protocol (ARP)**, finds **the appropriate MAC address for a given IPv4 address**. Nodes maintain ARP tables that map an IPv4 address to a MAC address. If a node does not have an entry in its ARP table for a destination IPv4 address, the node will send a request to the local network's broadcast address asking "who has this address?". 
 
 The destination node will receive the ARP request and respond with an ARP reply to the originating node. The originating node will then use the returned MAC address to send data.
+
+## IPv6 Addressing
+
+In order to make space for the massive number of machines that are about to come online, some folks recommend moving to an extended form of IP addressing, known as **IPv6 addressing**. Please don't ask about IPv5. You will be black-holed.
+
+![](https://media.giphy.com/media/l44Qu5o7fPqsadEnm/giphy.gif)
+
+IPv6 addresses are **128-bit numbers** arranged in eight groups of 16-bits (hextets). There are more thann 340 [undecillion](https://en.wikipedia.org/wiki/Names_of_large_numbers) IPv6 addresses!
+
+<img src="./image/ipv6.png">
+
+This looks slightly different from IPv4 addresses because we are using the hex representation of the numbers instead of the decimal representation.
+
+IPv6 addresses can be made more readable by removing leading zeros in each hextet. This simplifies the address without changing the value.
+
+fd00:4700:0010:0000:0000: 0000:6814:d103
+
+becomes
+
+fd00:4700:10:0:0:0:6814:d103
+
+Another rule is to replace the leftmost group of consecutive, zero-value hextets with double colons, producing:
+
+fd00:4700:10::6814:d103
+
+If your address has more than one group of consecutive zero-value hextets, you can remove only the leftmost group.
+
+### Network and Host Addresses
+
+Like IPv4 addresses, IPv6 addresses have a network address and a host address. The IPv6 host address is commonly known as the **interface ID**.  The network and host addresses are both 64-bits. 
+
+The first 48-bits of the network address are known as the global routing prefix (GRP), and the last 16 bits of the network address are the subnet ID. The GRP is used for globally subdividing the IPv6 address space, and routing traffic between these groups. The subnet ID is used to further subdivide each GRP-unique network into site-specific networks.
+
+<img src="./image/ipv6_divide.png">
+
+The GRP gets determined when you request a block of IPv6 addresses from your ISP. IANA assigns the first hextet of the GRP to a regional internet registry (an organization that handles the allocation of addresses for a global region). The registry then assigns the second GRP hextet to an ISP. The ISP finally assigns the the third GRP hextet before assigning a 48-bit subnet of IPv6 addresses to you.
+
+### IPv6 Address Categories
+
+IPv6 addresses are divided into three categories: anycast, multicast, and unicast. There is no broadcast type.
+
+A **unicast IPv6 address** uniquely identifies a node. If an originating node sends a message to a unicast address, only the node with that address will receive the message.
+
+<img src="./image/ipv6_unicast.png">
+
+A multicast IPv6 address represents a group of nodes. A multicast address will deliver a message to a subset of network addresses. This is similar to what we've already discusses with multicast.
+
+<img src="./image/ipv6_multicast.png">
+
+IPv6 includes **support for multiple nodes using the same network address**. This is NOT the case in IPv4 addressing where each node must be unique per network segment. An **anycast address** represents a **group of nodes listening to the same address**. The sender can transmit to any of the nodes in the group, but it should send to the **nearest node**. This might might not always be the physically closest node. It is up to the router to determine which node will receive the message, and that is usually the node with the least latency.
+
+<img src="./image/ipv6_anycast.png">
+
+Aside from reducing latency, anycast addressing increases redundancy and can geolocate services.
+
+### Why use IPv6?
+
+There are a few advantages:
+
+1. **Headers** 
+    1. **The header format of IPv6 packets is streamlined.** IPv6 makes many headers optional that IPv4 required, even if those header fields were rarely used.
+    2. The **IPv6 header is extensible**, functionality can be added without breaking backwards compatibility.
+    3. Lessens the loads on routers by ensuring that **headers require minimal processing**, eliminating the need for checksum calculations. If using TCP, the IP packet relies on layer-2 and layer-4 for checksumming. UDP requires a layer-3 checksum.
+2. **Automated Address Configuration**
+    1. Administrators have to manually assign IPv4 addresses to each node on a network or rely on a service to do so. Nodes in IPv6 can automatically configure their addresses to **reduce administrative overhead**. 
+    2. When connected to an IPv6 network, a node can solicit the router for its network address parameters using the **Neighbor Discovery Protocol (NDP)**. NDP uses ICMP and **performs the same duties as IPv4 ARP**. Once the node receives a reply from the router with the 64-bit network address, the node can derive the 64-bit host portion of its address by itself using the 48-bit MAC address assigned to its network interface.
+    3. How does it do this? The node appends the 16-bit hex FFFE to the first three octets of the MAC address (these three octets are known as the Originally Unique Identifier (OUI)). It then appends the remaining three octets of the MAC address which is the Network Interface Controller (NIC) identifier. This might concern you if you value privacy because a MAC address is a unique fingerprint that betrays your hardware. People raised concerns about this and this process now has privacy extensions which randomize the interface ID.
+
+    <img src="./image/ipv6_autoconfiguration.png">
+
+    4. This process will only work in the presence of a router who can respond with router advertisement packets.
+3. **Native IPsec support**
+    1. IPv6 has native support fo IPsec, a technology that allows nodes to encrypt IP traffic.
+
