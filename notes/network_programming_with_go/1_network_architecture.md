@@ -26,7 +26,7 @@ The birds-eye view of nodes in a network is called the topology. A network's top
 
 Topology types can be reduced to six basic categories: point-to-point, daisy chain, bus, ring, star and mesh.
 
-<img src="./image/topologies.png">
+<img src="./1_image/topologies.png">
 
 Here are some brief notes about certain topologies that are worth noting:
 
@@ -69,7 +69,7 @@ A web programmer can address latency in several ways:
 
 **Encapsulation** is the method of hiding implementation details or only making the relevant details available. As data travels down the network stack, it's encapsulated by the layer below. Typically this involves wrapping the current payload of data with some data that identifies it for the travel it will make across the network. Typically, a payload travels down the client's network stack, over physical media to the server, and up the server's network stack to its corresponding layer.
 
-<img src="./image/encapsulation.png">
+<img src="./1_image/encapsulation.png">
 
 There are specific names for the data at each layer of the network stack:
 
@@ -81,7 +81,7 @@ There are specific names for the data at each layer of the network stack:
 
 The TCP/IP model was designed using the **end-to-end principle**, whereby **each network segment includes only enough functionality to properly transmit the route bits**, all other functionality belongs to the endpoints. You can contrast this design with modern cellular networks, where more network functionality must be provided by the network between cell phones to allow for a cell phone connection to jump between towers without disconnecting a call.
 
-<img src="./image/tcp_ip.png">
+<img src="./1_image/tcp_ip.png">
 
 1. **Application Layer** - interacts directly with software applications. Most of the software we write use protocols in this layer: HTTP, FTP, SMTP, DHCP, DNS.
 2. **Transport Layer** - handles the transfer of data between two nodes. Most of our network applications rely on transport protocols to handle error detection, flow control, retransmission, and transport acknowledgement. TCP and UDP are the main transport protocols.
@@ -97,7 +97,7 @@ The **Internet Protocol (IP)** is a **set of rules that dictate the format of da
 
 **IPv4** is the fourth version of the Internet Protocol. IPv4 addresses are **32-bit numbers** arranged in four groups of 8 bits, called octets. The total range of 32-bit numbers limits us to just over four billion possible IPv4 addresses.
 
-<img src="./image/ipv4.png">
+<img src="./1_image/ipv4.png">
 
 We usually write IPv4 addresses in decimal format because it is easier to read as a human. Computers don't work with IP addresses this way though.
 
@@ -109,7 +109,7 @@ The **network ID** informs the network devices (routers) responsible for shuttli
 
 Once the data reaches the destination network, the router uses the **host ID** to **deliver the data to the correct recipient**. A good analogy for the host ID is that it is like a street address.
 
-<img src="./image/network_and_host_ids.png">
+<img src="./1_image/network_and_host_ids.png">
 
 The network ID portion of an IPv4 address always starts with the left-most bit, and its size is determined by the network it belongs to. The remaining bits designate the host ID.
 
@@ -123,7 +123,7 @@ Though it's appended to the end of the IP address, **we call it a prefix** rathe
 
 Let's take a simple example. The address 127.32.14.5/16 indicates that the first 16 bits are the network ID, and the last 16 bits are the host ID. 
 
-<img src="./image/cidr.png">
+<img src="./1_image/cidr.png">
 
 If you look at the image above you might notice that the number of usable hosts is two less than expected in each row. That's because **each network has two special addresses**. The first IP address in the network is the **network address** and the last IP address is the **broadcast address**.
 
@@ -131,7 +131,7 @@ Take the address 127.168.0.0/16, the first IP address is 127.168.0.0, this is th
 
 It's important to remember that **these splits don't have to be clean**. Let's look at the network ID and host ID for 192.168.156.97/19.
 
-<img src="./image/unclean_split.png">
+<img src="./1_image/unclean_split.png">
 
 The network ID is 192.168.128.0, the host ID is 0.0.28.97.
 
@@ -153,7 +153,7 @@ The combination of an **IP address and a port** number is a **socket address**.
 
 **Network Address Translation (NAT)** is a process that **allows numerous nodes to share the same public IPv4 address**. It requires a device that can keep track of incoming and outgoing traffic and properly route incoming traffic to the correct node.
 
-<img src="./image/nat.png">
+<img src="./1_image/nat.png">
 
 In the figure above, a NAT device receives a connection from the client socket address 10.0.0.3:50926 destined for a host on the internet. The NAT device opens up its own connection to the destination host using public IP address 1.2.3.4, preserving the client's socket address port.
 
@@ -169,11 +169,11 @@ Sending packets from **one IP address to another IP address** is known as **unic
 
 TCP/IP also supports **IP multicasting**. This means **sending a single message to a group of nodes**. Routers and switches will do the work of replicating the message that is sent.
 
-<img src="./image/multicast.png">
+<img src="./1_image/multicast.png">
 
 **Broadcasting** is the ability to concurrently **deliver a message to all IP addresses in a network**. To do this, nodes on a network send packets to the broadcast address of a subnet. A network switch or router will then propagate the packets out to all IPv4 addresses in the subnet.
 
-<img src="./image/broadcast.png">
+<img src="./1_image/broadcast.png">
 
 Unlike multicasting, the nodes in a subnet don't first need to opt in to receive broadcast messages.
 
@@ -195,7 +195,7 @@ In order to make space for the massive number of machines that are about to come
 
 IPv6 addresses are **128-bit numbers** arranged in eight groups of 16-bits (hextets). There are more thann 340 [undecillion](https://en.wikipedia.org/wiki/Names_of_large_numbers) IPv6 addresses!
 
-<img src="./image/ipv6.png">
+<img src="./1_image/ipv6.png">
 
 This looks slightly different from IPv4 addresses because we are using the hex representation of the numbers instead of the decimal representation.
 
@@ -219,7 +219,7 @@ Like IPv4 addresses, IPv6 addresses have a network address and a host address. T
 
 The first 48-bits of the network address are known as the global routing prefix (GRP), and the last 16 bits of the network address are the subnet ID. The GRP is used for globally subdividing the IPv6 address space, and routing traffic between these groups. The subnet ID is used to further subdivide each GRP-unique network into site-specific networks.
 
-<img src="./image/ipv6_divide.png">
+<img src="./1_image/ipv6_divide.png">
 
 The GRP gets determined when you request a block of IPv6 addresses from your ISP. IANA assigns the first hextet of the GRP to a regional internet registry (an organization that handles the allocation of addresses for a global region). The registry then assigns the second GRP hextet to an ISP. The ISP finally assigns the the third GRP hextet before assigning a 48-bit subnet of IPv6 addresses to you.
 
@@ -229,15 +229,15 @@ IPv6 addresses are divided into three categories: anycast, multicast, and unicas
 
 A **unicast IPv6 address** uniquely identifies a node. If an originating node sends a message to a unicast address, only the node with that address will receive the message.
 
-<img src="./image/ipv6_unicast.png">
+<img src="./1_image/ipv6_unicast.png">
 
 A multicast IPv6 address represents a group of nodes. A multicast address will deliver a message to a subset of network addresses. This is similar to what we've already discusses with multicast.
 
-<img src="./image/ipv6_multicast.png">
+<img src="./1_image/ipv6_multicast.png">
 
 IPv6 includes **support for multiple nodes using the same network address**. This is NOT the case in IPv4 addressing where each node must be unique per network segment. An **anycast address** represents a **group of nodes listening to the same address**. The sender can transmit to any of the nodes in the group, but it should send to the **nearest node**. This might might not always be the physically closest node. It is up to the router to determine which node will receive the message, and that is usually the node with the least latency.
 
-<img src="./image/ipv6_anycast.png">
+<img src="./1_image/ipv6_anycast.png">
 
 Aside from reducing latency, anycast addressing increases redundancy and can geolocate services.
 
@@ -254,7 +254,7 @@ There are a few advantages:
     2. When connected to an IPv6 network, a node can solicit the router for its network address parameters using the **Neighbor Discovery Protocol (NDP)**. NDP uses ICMP and **performs the same duties as IPv4 ARP**. Once the node receives a reply from the router with the 64-bit network address, the node can derive the 64-bit host portion of its address by itself using the 48-bit MAC address assigned to its network interface.
     3. How does it do this? The node appends the 16-bit hex FFFE to the first three octets of the MAC address (these three octets are known as the Originally Unique Identifier (OUI)). It then appends the remaining three octets of the MAC address which is the Network Interface Controller (NIC) identifier. This might concern you if you value privacy because a MAC address is a unique fingerprint that betrays your hardware. People raised concerns about this and this process now has privacy extensions which randomize the interface ID.
 
-    <img src="./image/ipv6_autoconfiguration.png">
+    <img src="./1_image/ipv6_autoconfiguration.png">
 
     4. This process will only work in the presence of a router who can respond with router advertisement packets.
 3. **Native IPsec support**
