@@ -18,6 +18,10 @@
     * [Network and Host Addresses](#network-and-host-addresses)
     * [IPv6 Address Categories](#ipv6-address-categories)
     * [Why use IPv6?](#why-use-ipv6)
+* [Internet Control Message Protocol (ICMP)](#internet-control-message-protocol-icmp)
+* [Internet Traffic Routing](#internet-traffic-routing)
+    * [Routing Protocols](#routing-protocols)
+    * [Border Gateway Protocol (BGP)](#border-gateway-protocol-bgp)
 
 ## Network Architecture
 ## Topology
