@@ -260,3 +260,42 @@ There are a few advantages:
 3. **Native IPsec support**
     1. IPv6 has native support fo IPsec, a technology that allows nodes to encrypt IP traffic.
 
+## Internet Control Message Protocol (ICMP)
+
+The **Internet Protocol (IP) relies on ICMP** to give it **feedback about the network**. ICMP can inform IP about network problems, unreachable nodes or networks, network configuration, proper traffic routes, and network time-outs. Both **IPv4 and IPv6 have their own ICMP implementations**.
+
+ICMP differs from transport protocols like TCP and UDP in that it is **not typically used to exchange data between systems**, nor is it regularly used by end-user network applications with the exception of diagnostic tools like `ping` and `traceroute`.
+
+Let's look at a couple of different messages you could see from ICMP:
+1. *Destination Unreachable* - if you attempt to send data to an unreachable node, a router will send you an ICMP destination unreachable message.
+2. *Redirect* - Routers can inform you if better routes to your destination node.
+3. *Echo* - You can determine whether a node is online and reachable by using an ICMP echo request.
+4. *Time Exceeded* - ICMP can notify you if you data reaches the end of its life before a delivery. Every IP packet has a **time-to-live value** that dictates the maximum number of hops the packet can take before it expires. A packet's TTL is decremented by one every time it takes a hop. You will receive an ICMP time exceeded message if this value ever reaches zero.
+
+IPv6's NDP (Neighbor Discovery Protocol) relies heavily on ICMP router solicitation messages to properly configure a node's NIC.
+
+## Internet Traffic Routing
+
+<img src="./1_image/routing.png">
+
+The addressing and naming schemes of packets would be pretty dull topics if we didn't talk about how they are actually used. The figure above gives a high-level overview of how packets move through the layers that we've discussed as they travel across the Internet.
+
+The most important thing to note here is that no matter what kind of intermediate nodes that our packets travel across, these nodes have a network stack associated with each network interface. The physical medium and protocols used at Layer 1 and Layer 2 might be heterogenous, but the data nonetheless climbs up to Layer 3 where it's handed off to the outgoing network interface's stack.
+
+### Routing Protocols
+
+Unfortunately, the high-level summary in the previous section makes it sound like this coordination is easy. In reality, the routing process relies on a symphony of protocols to handle different aspects of routing packets between nodes.
+
+Routing protocols have a variety of criteria for determining the best path between nodes: it could be hop count, bandwidth, or more complicated means.
+
+Routing protocols are either **internal** or **external** depending on whether they route packets **within an** **autonomous system** or not.
+
+An **autonomous system** (AS) is an **organization that manages one or more networks**. An ISP is an example of an AS. Each AS is assigned an **autonomous system number (ASN)**. 
+
+This ASN is used to **broadcast an ISP's network information** to other AS's using an **external routing protocol**. An external routing protocol **routes data between autonomous systems**. 
+
+### Border Gateway Protocol (BGP)
+
+BGP is an external routing protocol that **allows ASN-assigned ISPs to exchange routing information**. BGP relies on trust between ISPs, that is if an ISP claims that it manages a specific network, other ISPs trust this claim and send traffic accordingly. As a result of this trust, **BGP misconfigurations often result in public network outages**.
+
+BGP can also be used to mitigate DDoS attacks. It can be used to reroute all trafic destined for a victim node to a specialized AS network that filters malicious traffic from legitimate traffic. This adds some latency but it also prevents victim services from being taken down.
