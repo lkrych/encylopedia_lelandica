@@ -22,6 +22,12 @@
 * [Internet Traffic Routing](#internet-traffic-routing)
     * [Routing Protocols](#routing-protocols)
     * [Border Gateway Protocol (BGP)](#border-gateway-protocol-bgp)
+* [Domain Name Records](#domain-name-records)
+    * [The Address Record](#the-address-record)
+    * [Start of Authority Record](#start-of-authority-record)
+    * [The Name Server Record](#the-name-server-record)
+    * [The Canonical Name Record](#the-canonical-name-record)
+    * [Multicast DNS](#multicast-dns)
 
 ## Network Architecture
 ## Topology
@@ -302,4 +308,147 @@ This ASN is used to **broadcast an ISP's network information** to other AS's usi
 
 BGP is an external routing protocol that **allows ASN-assigned ISPs to exchange routing information**. BGP relies on trust between ISPs, that is if an ISP claims that it manages a specific network, other ISPs trust this claim and send traffic accordingly. As a result of this trust, **BGP misconfigurations often result in public network outages**.
 
-BGP can also be used to mitigate DDoS attacks. It can be used to reroute all trafic destined for a victim node to a specialized AS network that filters malicious traffic from legitimate traffic. This adds some latency but it also prevents victim services from being taken down.
+BGP can also be used to mitigate DDoS attacks. It can be used to reroute all traffic destined for a victim node to a specialized AS network that filters malicious traffic from legitimate traffic. This adds some latency but it also prevents victim services from being taken down.
+
+## Domain Name Records
+
+The **Domain Name System (DNS)** is a way of **matching IP addresses to domain names**. Domain names are easier for humans to understand and remember. They provide a level of indirection that allows service provider to move their servers to different IPs and still providing a static means of reaching the service (the domain name).
+
+Domains are **structured hierarchically**, and all domains are children of a **top-level domain**, such as `.com`, `.net`, or `.org`. You have to register domains on the top-level domains, such as `.com`, and this gives you exclusive authorship to manage DNS records for your site, say `mycoolsite.com`, and publish DNS records on your domain server. This includes the ability to manage **subdomains** like `mail.mycoolsite.com`.
+
+The domain name resolution process happens as follows:
+1. You search for `https://google.com` im your browser.
+2. Your computer consults its internal domain name resolver.
+3. Your domain name resolver will ask one of 13 IANA-(Internet Assigned Numbers Authority)-maintained root name servers for the IP address of `google.com`. 
+4. The root name server will examine the top-level domain you requested, in this case: `.com`, and give your resolver the address of the `.com` name server.
+5. Your resolver will then ask the `.com` server for `google.com`'s IP address, which will respond with the IP address of google's name servers.
+6. Your resolver will then ask the google name server for the IP address and receive the IP address.
+
+Domain name servers maintain resource records for the domains they serve. Resource records contain domain-specific information used to satisfy domain name queries. There are many different kinds of records, we will cover a few.
+
+### The Address Record
+
+The address (A) record is the most common record you will query. An A record will resolve to one or more IPv4 addresses. When your computer asks its resolver to retrieve the IP address for `https://google.com`, the resolver ultimately asks for the A record from the google domain servers.
+
+```bash
+~/encylopedia_lelandica/notes(main*) » dig google.com
+
+; <<>> DiG 9.10.6 <<>> google.com
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 27553
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;google.com.			IN	A
+
+;; ANSWER SECTION:
+google.com.		5	IN	A	172.217.12.46
+
+;; Query time: 54 msec
+;; SERVER: 173.36.45.177#53(173.36.45.177)
+;; WHEN: Thu Apr 01 08:42:22 PDT 2021
+;; MSG SIZE  rcvd: 55
+```
+
+When using `dig`, consult the ANSWER section for the record. The rest of the output is information about who provided the answers, how long it took, and other useful debugging information.
+
+In the answer section you can see three fields:
+1. The fully qualified domain.
+2. The TTL for the record.
+3. The type of record.
+
+### Start of Authority Record
+
+The **Start of Authority (SOA) record** contains authoritative and administrative details about the domain. The first three fields are the same as those found in the A record. The record also includes the primary name server, the administrators email address, and fields used by the secondary name servers. The **primary name server is the server which resolves the address being queried for, it typically holds the authoritative records**.
+
+```bash
+~/encylopedia_lelandica/notes(main*) » dig google.com soa
+
+; <<>> DiG 9.10.6 <<>> google.com soa
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 42442
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;google.com.			IN	SOA
+
+;; ANSWER SECTION:
+google.com.		60	IN	SOA	ns1.google.com. dns-admin.google.com. 365995851 900 900 1800 60
+
+;; Query time: 98 msec
+;; SERVER: 173.36.45.177#53(173.36.45.177)
+;; WHEN: Thu Apr 01 08:49:54 PDT 2021
+;; MSG SIZE  rcvd: 89
+```
+
+### The Name Server Record
+
+The **Name Server (NS) record** returns the **authoritative name servers for the domain name**. Authoritative name servers are the **name servers able to provide answers for the domain name**. NS records **will include the primary name server from the SOA record and any secondary name servers** answering DNS queries for the domain.
+
+```bash
+~/encylopedia_lelandica/notes(main*) » dig google.com ns
+
+; <<>> DiG 9.10.6 <<>> google.com ns
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 54101
+;; flags: qr rd ra; QUERY: 1, ANSWER: 4, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;google.com.			IN	NS
+
+;; ANSWER SECTION:
+google.com.		345600	IN	NS	ns1.google.com.
+google.com.		345600	IN	NS	ns2.google.com.
+google.com.		345600	IN	NS	ns3.google.com.
+google.com.		345600	IN	NS	ns4.google.com.
+
+;; Query time: 88 msec
+;; SERVER: 173.36.45.177#53(173.36.45.177)
+;; WHEN: Thu Apr 01 08:52:13 PDT 2021
+;; MSG SIZE  rcvd: 111
+```
+
+### The Canonical Name Record
+
+The **Canonical Name (CNAME) record points one domain at another**. CNAME records can make administration easier by catching other domains and redirecting them to a central domain.
+
+```bash
+~/encylopedia_lelandica/notes(main*) » dig mail.google.com. a
+; <<>> DiG 9.10.6 <<>> mail.google.com. a
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 21042
+;; flags: qr rd ra; QUERY: 1, ANSWER: 5, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;mail.google.com.		IN	A
+
+;; ANSWER SECTION:
+mail.google.com.	5	IN	CNAME	googlemail.l.google.com.
+googlemail.l.google.com. 5	IN	A	142.250.138.19
+googlemail.l.google.com. 5	IN	A	142.250.138.83
+googlemail.l.google.com. 5	IN	A	142.250.138.17
+googlemail.l.google.com. 5	IN	A	142.250.138.18
+
+;; Query time: 91 msec
+;; SERVER: 173.36.45.177#53(173.36.45.177)
+;; WHEN: Thu Apr 01 08:54:18 PDT 2021
+;; MSG SIZE  rcvd: 135
+```
+
+You can see here that when you ask for the A record of the subdomain `mail.google.com`, you receive a CNAME record. This implies that the real server that hosts the service you want lives at `googlemail.l.google.com`.
+
+### Multicast DNS
+
+**Multicast DNS (mDNS)** is a protocol that **facilitates name resolution over a LAN** in the absence of a DNS server. When a node wants to resolve a domain name to an IP address, it will send a request to an IP multicast group. Nodes listening on the group receive the request and the node with the requested domain can respond to the multicast group with its IP address.
