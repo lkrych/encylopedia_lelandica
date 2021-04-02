@@ -24,8 +24,21 @@ You can think of a session as a conversation between two nodes. One node sends d
 
 TCP sessions are established with a **three-way handshake**. The handshake will create an established TCP session.
 
-<img src="./1_image/three_way_handshake.png">
+<img src="./2_image/three_way_handshake.png">
 
-Before a server can establish a TCP session, it must **listen for incoming connections**.
+1. Before a server can establish a TCP session, it must **listen for incoming connections**.
+2. As the first step of the handshake, the client sends a packet with the **synchronize (SYN) flag**. The SYN packet informs the server of the **client's capabilities and preferred window settings** (size of buffer to send).
+3. The server will respond with a packet with the **acknowledgement (ACK) and synchronization (SYN) flags** set. The ACK flag tells the client that the server acknowledges receipt of the client's SYN packet. The **server's SYN packet tells the client what settings it has agreed to** for the conversation.
+4. The client replies with an ACK packet to acknowledge the server's SYN packet.
 
-As the first step of the handshake, the client sends a packet with the **synchronize (SYN) flag**.
+Completion of the three-way handshake **establishes the TCP session**, and nodes may then exchange data. The TCP session remains idle until either side has data to transmit. Unmanaged and lengthy TCP sessions may result in wasteful consumption in memory, in fact, this is the vector of some cybersecurity attacks. An attacker will attempt to create numerous TCP sessions with your server without the intent of sending data just to limit your ability to server other clients.
+
+### Sequence Numbers
+
+Each TCP packet contains a **sequence number**, which the receiver **uses to acknowledge receipt of each packet** and to **properly order the packets** for presentation.
+
+<img src="./2_image/seq_nums.png">
+
+A client's operating system (OS) determines the initial sequence number and sends it to the server during the handshake. The server acknowledges receipt of the packet by including the sequence number plus 1 in its ACK packet. Similarly, the server will include its own sequence number in its SYN packet.
+
+The ACK packet uses the sequence number to **tell the sender that it has received all packets up to and including the packet** with this sequence number. You might notice **selective acknowledgements (SACKs)** being exchanged. These are ACK packets used to acknowledge the receipt of a subset of sent packets.
