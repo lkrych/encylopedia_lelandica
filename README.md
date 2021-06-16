@@ -24,5 +24,7 @@ A centralized spot to view all of my notes 📚
     * C Programming
         * [Pointers in C](https://github.com/lkrych/cprogramming/tree/master/pointers)
         * [Essential C](notes/essential_c/Essential_C.md)
+        * [Extreme C](notes/extreme_c/README.md)
         * [Network Programming In C](https://github.com/lkrych/network_programming/tree/master/beej)
+        
     
