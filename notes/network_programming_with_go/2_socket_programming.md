@@ -76,4 +76,8 @@ The figure above shows a gracefully-terminated connection.
 
 Not all connections politely terminate. In some cases a TCP connection might crash. When this happens, the TCP connection is immediately closed. Any packets sent from the still healthy side will prompt the closed side to return a reset (RST) packet. The RST packet informs the sender that the receiver's side is closed and will no longer accept data. The server should close its side of the connection.
 
+## Establishing a TCP connection using Go
+
+The `net` package in Go's standard library includes good support for creating TCP-based servers and clients.
+
 
