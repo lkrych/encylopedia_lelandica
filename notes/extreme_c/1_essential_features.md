@@ -111,3 +111,45 @@ What we can see here is called the **translation unit**, and it is the preproces
 
 ### Using Macros to create a DSL
 
+Let's take a look at an example of using a few macros to generate a loop.
+
+```c
+#include <stdio.h>
+
+#define PRINT(a) printf("%d\n", a);
+#define LOOP(v, s, e) for (int v = s; v <= e; v++) {
+#define ENDLOOP }
+
+int main(int argc, char** argv) {
+    LOOP(counter, 1, 10)
+        PRINT(counter)
+    ENDLOOP
+    return 0;
+}
+```
+
+This is a wild example. The code inside the main function is in no way valid C code, however after macro expansion, it becomes. 
+
+```c
+... some stuff
+
+int main(int argc, char** argv){
+    for (int counter = 1; counter <= 10; counter++) {
+        printf("%d\n", counter);
+    }
+    return 0;
+}
+```
+This is an example that shows one of the applications of macros. A well defined set can be used to define a **domain specific language(DSL)**, and allow you to write code using that DSL. DSLs are used heavily in testing frameworks like `gtest`.
+
+### Advantages and Disadvantages of Macros
+
+**Good software design** dictates that we should **try to package similar algorithms and concepts in several manageable and reusable modules**. 
+
+Macros by contrast try to make everything **linear and flat** by substituting macro values before compile time. 
+
+This has led to the C developer adage of : *if a macro can be written as a C function, then you should write a C function instead*. 
+
+Another problem is the **mismatch between the source code and the translation unit**. If a C developer is looking at the compiler errors from a piece of code that heavily uses macros, they will have to back-track through the pre-processing macro expansion to figure out how the generated code that is currently erroring was created.
+
+### Conditional Compilation
