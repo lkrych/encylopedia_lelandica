@@ -153,3 +153,54 @@ This has led to the C developer adage of : *if a macro can be written as a C fun
 Another problem is the **mismatch between the source code and the translation unit**. If a C developer is looking at the compiler errors from a piece of code that heavily uses macros, they will have to back-track through the pre-processing macro expansion to figure out how the generated code that is currently erroring was created.
 
 ### Conditional Compilation
+
+Conditional compilation allows you to have different preprocessed source code based on different conditions.
+
+There are a list of directives contributing to conditional compilation:
+1. #ifdef
+2. #ifndef
+3. #else
+4. #elif
+5. #endif
+
+```c
+#define CONDITION
+
+int main(int argc, char** argv) {
+    #ifdef CONDITION
+        int i = 0;
+        i++;
+    #endif
+        int j = 0;
+        return 0;
+}
+```
+Because the `CONDITION` macro is defined the lines between `#ifdef` will be copied to the final source code.
+
+One of the most common use cases of this feature is for **header guards**. A header guard **protects a header file from being included twice in the preprocessing phase**.
+
+```c
+#ifndef EXAMPLE_1_8_H
+#define EXAMPLE_1_8_H
+
+void say_hello();
+int read_age();
+
+#endif
+```
+
+How do header guards work?
+
+Let's imaging that the preceding example is a header file. The variable and function declarations are put inside the `#ifndef` block. As the first inclusion happens, the macro `EXAMPLE_1_8_H` is not yet defined, so the preprocessor continues by entering the `#ifndef` block. The next statement defines the macro, and the preprocessor copies everything into the macro value. The next time the inclusion happens, the macro is already defined so the preprocessor skips the content.
+
+Another common pattern is to use the `#pragma once` directive in order to protect a header from double inclusion. This pattern is not a C standard so it is not portable.
+
+```c
+#pragma once
+
+void say_hello();
+int read_age();
+
+```
+
+## Variable Pointers
