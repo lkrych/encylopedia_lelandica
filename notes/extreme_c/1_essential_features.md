@@ -230,3 +230,62 @@ It's common to define a `NULL` macro with a value of 0. This can be used to null
 ```c
 char* ptr = NULL;
 ```
+
+### Arithmetic on pointers
+
+The simplest picture of memory is **a very long one-dimensional array of bytes**. You can only go back and forth in the array. There's no other possible movement.
+
+We can think of pointer arithmetic using this image of memory, you can add to a pointer to make the pointer go forward in memory, and you can subtract from the pointer to make it go backward in memory.
+
+Each pointer has an **arithmetic step size**, this is the size of the data type that is pointed to by the pointer. A char is one byte, so the arithmetic step size is 1. An int is 4 bytes, so an int pointer has an arithmetic step size of 4. 
+
+A good question to ask is why this is useful? 
+
+In C, arrays are pointers that point to the first element of the array. Well, we know that **arrays are adjacent variables inside memory**, so incrementing and decrementing a pointer which is pointing to an element effectively makes it move back and forth inside the array and point to different elements.
+
+### Generic Pointers
+
+A pointer of type `*void` is said to be a **generic pointer**. It can point to any address like all other pointers, but we don't know its actual data type. This means we don't know its arithmetic step size.
+
+Generic pointers are usually used to hold the content of other pointers, but they forget the actual data types of those pointers. This means **a generic pointer cannot be dereferenced** because the compiler does not know how much data should be read from memory.  
+
+Generic pointers are useful for defining generic functions that can accept a wide range of pointers as their input arguments.
+
+```c
+#include <stdio.h>
+
+void print_bytes(void* data, size_t length) {
+    char delim = ' ';
+    unsigned char*  ptr = data;
+    for (size_t i = 0;  i < length; i++) {
+        printf("%c  0x%x", delim, *ptr);
+        delim = ",";
+        ptr++;
+    }
+    printf("\n");
+}
+
+int main(int argc, char** argv) {
+    int a = 9;
+    double b = 18.9;
+
+    print_bytes(&a, sizeof(int));
+    print_bytes(&b, sizeof(int));
+
+    return 0;
+}
+```
+
+```bash
+~/encylopedia_lelandica/notes/extreme_c/examples(main*) » gcc -o print_bytes 1_print_bytes.c
+---------------------------------------------------------------------------------------------
+~/encylopedia_lelandica/notes/extreme_c/examples(main*) » ./print_bytes
+   0x9,  0x0,  0x0,  0x0
+   0x66,  0x66,  0x66,  0x66,  0x66,  0xe6,  0x32,  0x40
+```
+
+The `print_bytes` function receives an address as a `void*` pointer and ann integer indicating the length. Using the arguments, the function prints all the bytes started from the given address. By accepting a generic pointer, we can pass whatever kind of pointer we want.
+
+Inside the `print_bytes` function we use an unsigned char pointer to move inside memory because an **unsigned char is 1 byte**. This makes it the best pointer type for iterating over a range of memory addresses.
+
+`size_t` is a standard and unsigned data type for storing sizes in C. 
