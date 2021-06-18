@@ -251,6 +251,7 @@ Generic pointers are usually used to hold the content of other pointers, but the
 
 Generic pointers are useful for defining generic functions that can accept a wide range of pointers as their input arguments.
 
+generic pointer example:
 ```c
 #include <stdio.h>
 
@@ -288,4 +289,55 @@ The `print_bytes` function receives an address as a `void*` pointer and ann inte
 
 Inside the `print_bytes` function we use an unsigned char pointer to move inside memory because an **unsigned char is 1 byte**. This makes it the best pointer type for iterating over a range of memory addresses.
 
-`size_t` is a standard and unsigned data type for storing sizes in C. 
+### Size of a pointer
+
+`size_t` is a standard and unsigned data type for storing sizes in C. In general you cannot define a fixe size for a pointer. **The size of a pointer depends on the architecture**. 
+
+You can use the `sizeof` function to obtain the size of a pointer.
+
+### Dangling pointers
+
+The most common way to misuse a pointer is have a **dangling pointer**. A pointer usually points to an address where a variable is allocated. Reading or modifying an address where there is no variable registered is a big mistake and can result in a crash.
+
+dangling pointer example:
+```c
+#include <stdio.h>
+
+int* create_an_innteger(int default_value) {
+    int var = default_value;
+    return &var;
+}
+
+int main() {
+    int* ptr = NULL;
+    ptr = create_an_integer(10);
+    printf("%d\n", *ptr);
+    return 0;
+}
+```
+
+In the example above, the `create_an_integer` function is used to create an integer. This function will not work because the `ptr` pointer **will point to an already de-allocated portion of memory**. 
+
+The `var` variable is a local variable to the `create_an_integer` function that lives on the stack and it will be de-allocated after leaving the function.
+
+The proper way to write this code is to **use Heap memory**.
+
+```c
+#include <stdio.h>
+
+int* create_an_innteger(int default_value) {
+    int* var_ptr = (int*)malloc(sizeof(int));
+    *var_ptr = default_value;
+    return var_ptr;
+}
+
+int main() {
+    int* ptr = NULL;
+    ptr = create_an_integer(10);
+    printf("%d\n", *ptr);
+    free(ptr);
+    return 0;
+}
+```
+
+Variables allocated from Heap memory are not limited to the function declaring it. Therefore it can be accessed in the main function. The pointer to this variable is not dangling anymore. Eventually the variable becomes de-allocated by calling `free`.
