@@ -204,3 +204,29 @@ int read_age();
 ```
 
 ## Variable Pointers
+
+Pointers are one of the most fundamental concepts in C. 
+
+Fundamentally, a **pointer** is a **variable that stores a memory address**.
+
+An asterisk (*) is used to declare a pointer in C. A **pointer which has a zero value** is called a **null pointer**. A null pointer does not point to a valid memory address.
+
+The ampersand (&) is known as the **referencing operator**. It returns the address of the variable next to it.
+
+The asterisk (*) used after declaration of a pointer is known as the **dereferencing operator**. It allows you to have **access to the memory cell that the pointer is pointing to**. Dereferencing a null pointer can lead to a crash in your program because a null pointer does not point to a valid memory address.
+
+```c
+int main(int argc, char** argv) {
+    int var = 100; // declare and initialize var
+    int* ptr = 0;  // declares and initialize null pointer
+    ptr = &var;    // use reference operator to obtain the address of the variable
+    *ptr = 200;    // use the dereferencing operator to save the value 200 in the address pointed to by ptr
+    return 0;
+}
+```
+
+It's common to define a `NULL` macro with a value of 0. This can be used to nullify pointers upon declaration.
+
+```c
+char* ptr = NULL;
+```
