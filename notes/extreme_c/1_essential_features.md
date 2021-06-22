@@ -341,3 +341,91 @@ int main() {
 ```
 
 Variables allocated from Heap memory are not limited to the function declaring it. Therefore it can be accessed in the main function. The pointer to this variable is not dangling anymore. Eventually the variable becomes de-allocated by calling `free`.
+
+## Functions
+
+In C, **functions return only one value**. Functions are **always blocking** in C. This means that the caller ha to wait for a function to finish and only then can it collect the returned result. Asynchronous functions are implemented using multithreading. They are discussed more in the concurrency section of these notes.
+
+Nowadays there is growing interest in writing non-blocking function calls. This is usually positioned as **event-oriented programming**. In this style, actual function calls happen inside an event loop, and proper callbacks are triggered upon the occurrence of an event. Frameworks such as `libuv` and `libev` promote this way of coding.
+
+### Stack Management
+
+The memory layout of a process running on a Unix-like OS includes a **segment known as the Stack**. The Stack segment is the **default memory location where all local variables, arrays and structures are allocated from**. When you declare a local variable in a function, it is allocated on top of the Stack segment.
+
+The Stack segment is used for function calls. **When you call a function**, a **stack frame** containing the return address and all the passing arguments is **put on top of the Stack segment**, and only then is the function logic executed. When **returning** from the function, the **stack frame is popped out**, and the instruction addressed by the return address gets executed, which should **usually continue the caller function**.
+
+All local variables declared int he function body are put on top of the Stack segment. So when leaving the function, all Stack variables become freed. That is why they are called local variables and that is also why a function cannot access variables in another function.
+
+### Pass-by-value versus Pass-by-reference
+
+You can **only pass-by-value in C**. There is no reference in C. Everything is copied into the function's local variables and you cannot read or modify them after leaving a function.
+
+```c
+#include <stdio.h>
+
+void func(int* a) {
+    int b = 9;
+    *a = 5;
+    a = &b;
+}
+
+int main(int argc, char** argv) {
+    int x = 3;
+    int* xptr = &x;
+    printf("Value before call: %d\n", x);
+    printf("Pointer before function call: %p\n", (void*)xptr);
+    func(xptr);
+    printf("Value after call: %d\n", x);
+    printf("Pointer after function call: %p\n", (void*)xptr);
+    return 0;
+}
+```
+```bash
+~/encylopedia_lelandica(main) » gcc 1_pass_by_value.c -o pass_by_value
+----------------------------------------------------------------------------------------
+
+~/encylopedia_lelandica(main*) » ./pass_by_value                                 lkrych@LKRYCH-M-W49D
+Value before call: 3
+Pointer before function call: 0x7ffee9dc1a0c
+Value after call: 5
+Pointer after function call: 0x7ffee9dc1a0c
+```
+What we see here is that the value of the pointer is not changed after the function call, one might suppose that we would see the value of 9, after the invocation of `func`, however the pointer is passed by value. Dereferencing the pointer inside `func` has allowed accessing the variable where the pointer is pointing to, but changing the value of the pointer parameter inside the function doesn't change its counterpart argument in the caller function.
+
+The above example demonstrates an important style in C programming: it is **recommended that we use pointers as arguments instead of passing objects into a function** because copying a pointer value is much more efficient than copying hundreds of bytes of a big object into a function.
+
+### Function Pointers
+
+Function pointers are another unique feature of C. Their most common application is to **split a large binary into smaller binaries and loading them again in small executables**. This technique has led to **modularization** and software design.
+
+Like a variable pointer addressing a variable, a function pointer addresses a function and allows you to call that function indirectly.
+
+```c
+#include <stdio.h>
+
+int sum(int a, int b) {
+    return a + b;
+}
+
+int subtract(int a, int b) {
+    return a - b;
+}
+
+int main() {
+    int (*func_ptr) (int, int);
+    func_ptr = NULL;
+
+    func_ptr = &sum;
+    int result = func_ptr(5, 4);
+    printf("Sum: %d\n", result);
+
+    func_ptr = &subtract;
+    int result = func_ptr(5, 4);
+    printf("Subtract: %d\n", result);
+    return 0
+}
+```
+
+In the preceding example, `func_ptr` is a function pointer, it **can only point to a specific class of functions that match its signature**. We can call different functions for the same list of arguments using a single function pointer. T**his is the only way to support polymorphism in C**. 
+
+A common pattern is to use `typedef` for function pointers. The `typedef` keyword allows you to define an alias for an already defined type. These aliases add readability to the code and let you choose a shorter name for a long and complex type. In C, the name of a new type usually ends with `_t` by convention.
