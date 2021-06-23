@@ -429,3 +429,70 @@ int main() {
 In the preceding example, `func_ptr` is a function pointer, it **can only point to a specific class of functions that match its signature**. We can call different functions for the same list of arguments using a single function pointer. T**his is the only way to support polymorphism in C**. 
 
 A common pattern is to use `typedef` for function pointers. The `typedef` keyword allows you to define an alias for an already defined type. These aliases add readability to the code and let you choose a shorter name for a long and complex type. In C, the name of a new type usually ends with `_t` by convention.
+
+## Structures
+
+Structures are one of the most important features of C, they enable **encapsulation**. Structures **encapsulate related values under a single unified type**. 
+
+```c
+struct color_t {
+    int red;
+    int green;
+    int blue;
+}
+```
+
+*Note that we use an `_t` suffix for naming new types*.
+
+Structures **allow you to define your own data types**. These types are different from the types you could define with the keyword `typedef`. The `typedef` keyword doesn't really create a new type, but rather it defines an alias for an already defined type.
+
+### Memory layout
+
+It is important for C programmers to know the memory layout of a structure variable. Having a bad layout could cause performance degradations on certain architectures.
+
+The memory layout of a structure is very similar to an array. The difference is that in an array all the element have the same type and therefore the same size. In a struct, each field can have a different type and hence, a different size. This means that unlike an array, **the size of a struct in memory depends on a few factors and cannot be easily determined**.
+
+Let's look at an example:
+
+```c
+#include <stdio.h>
+
+struct sample_t {
+    char first;
+    char second;
+    char third;
+    char fourth;
+};
+
+void print_size(struct sample_t* var) {
+    printf("Size: %lu bytes\n", sizeof(*var));
+}
+
+void print_bytes(struct sample_t* var) {
+    unsigned char* ptr = (unsigned char*) var;
+    for (int i = 0; i < sizeof(*var); i++,  ptr++) {
+        printf("%d ", (unsigned int)*ptr);
+    }
+    printf("\n");
+}
+
+int main(int argc, char** argv) {
+    struct sample_t var;
+    var.first = 'A';
+    var.second = 'B';
+    var.third = 'C';
+    var.fourth = 765;
+    print_size(&var);
+    print_bytes(&var);
+    return 0;
+}
+```
+and now let's compile it
+
+```bash
+~/encylopedia_lelandica(main*) » gcc 1_print_struct.c -o print_struct
+
+~/encylopedia_lelandica(main*) » ./print_struct                                              lkrych@LKRYCH-M-W49D
+Size: 6 bytes
+65 66 67 0 253 2
+```
