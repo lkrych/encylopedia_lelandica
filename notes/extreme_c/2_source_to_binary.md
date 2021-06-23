@@ -60,7 +60,7 @@ double average(int* array, int length) {
 
 To further cement these concepts we are going to walk through the compilation pipeline with a specific example.
 
-### Compiling an example
+### Compiling an Example
 
 In this example we will have three files, one header file and two source files. The purpose of this code is to calculate the average of an array.
 
@@ -70,3 +70,30 @@ The header file is used as a bridge between two separate source files and makes 
     - average.h
     - average.c
     - main.c
+
+*average.h*
+```c
+#ifndef EXAMPLE_AVERAGE
+#define EXAMPLE_AVERAGE 
+typedef enum{
+    NONE,
+    NORMAL,
+    SQUARED
+} average_type_t
+
+double average(int*, int, average_type_t)
+#endif
+```
+*average.c*
+```c
+double average(int* array, int length) {
+    if (length <= 0) {
+        return 0;
+    }
+    double sum = 0.0;
+    for (int i = 0; i < length; i++) {
+        sum += array[i];
+    }
+    return sum/length;
+}
+```
