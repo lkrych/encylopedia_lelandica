@@ -1,6 +1,23 @@
 # Essential Features
 
 ## Table of Contents
+* [Foreshadowing](#foreshadowing)
+* [Preprocessor Directives](#preprocessor-directives)
+    * [Macros](#macros)
+    * [Translation Units and Using the Compiler to view code after preprocessing](#translation-units-and-using-the-compiler-to-view-code-after-preprocessing)
+    * [Using Macros to create a DSL](#using-macros-to-create-a-dsl)
+    * [Advantages and Disadvantages of Macros](#advantages-and-disadvantages-of-macros)
+    * [Conditional Compilation](#conditional-compilation)
+* [Variable Pointers](#variable-pointers)
+    * [Arithmetic on pointers](#arithmetic-on-pointers)
+    * [Generic Pointers](#generic-pointers)
+* [Functions](#functions)
+    * [Stack Management](#stack-management)
+    * [Pass-by-value versus Pass-by-reference](#passbyvalue-versus-passbyreference)
+    * [Function Pointers](#function-pointers)
+* [Structures](#structures)
+    * [Memory layout](#memory-layout)
+    * [Structure Pointers](#structure-pointers)
 
 ## Foreshadowing
 
@@ -487,7 +504,7 @@ int main(int argc, char** argv) {
     return 0;
 }
 ```
-and now let's compile it
+It seems like it should be easy to guess what the output of this program should be right? Our struct has four fields, three 1 byte char fields, and one 2 byte short field. This suggests a five byte struct. Well, let's run the program and see what happens.
 
 ```bash
 ~/encylopedia_lelandica(main*) » gcc 1_print_struct.c -o print_struct
@@ -496,3 +513,32 @@ and now let's compile it
 Size: 6 bytes
 65 66 67 0 253 2
 ```
+To explain why the size of the structure is not 5 bytes, we need to introduce the concept of **memory alignment**. The CPU needs to load values from memory before being able to compute anything, and it needs to store the results back again in the memory after a computation. Computation is fast, memory access is slow.
+
+The **CPU usually reads a specific number of bytes in each memory access**. This number of bytes is known as a **word**. The memory is split into words and a word is the **atomic unit used by the CPU** to read from and write to memory. The number of bytes in a word is architecture-dependent, for example, in most 64-bit machines, the word size is 32 bits, or 4 bytes.
+
+A variable is said to be aligned in memory if its starting byte is at the beginning of a word. This way the CPU can load its value in an optimized number of memory accesses.
+
+Regarding the struct above, the first three fields are 1 byte each, and they reside in the first word of the structs layout, this means they can all be read with one memory access. The fourth element occupies 2 bytes, if we forget about memory alignment, its first byte will be the last byte of the first word. 
+
+We can see that the **compiler used a padding technique to shift the fourth field into the start of the next word**. This is what the extra zero after the int `67` is. It is possible to turn off alignment. In C terminology, we use a more specific term for un-aligned structures-- they are said to be **packed**. 
+
+
+```c
+struct __attribute__((__packed__)) sample_t {
+    char first;
+    char second;
+    char third;
+    char fourth;
+};
+```
+```bash
+~/encylopedia_lelandica(main*) » ./print_struct                                              lkrych@LKRYCH-M-W49D
+Size: 5 bytes
+65 66 67 253 2
+```
+Packed structures are usually used in **memory-constrained environments**. They can have a huge negative impact on the performance of most architectures.
+
+### Structure Pointers
+
+We can have pointers to user-defined types as well. A structure pointer points to the address of the first field of the structure variable.
