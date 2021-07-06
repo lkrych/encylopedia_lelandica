@@ -79,21 +79,191 @@ typedef enum{
     NONE,
     NORMAL,
     SQUARED
-} average_type_t
+} average_type_t;
 
-double average(int*, int, average_type_t)
+double average(int*, int, average_type_t);
 #endif
 ```
 *average.c*
 ```c
-double average(int* array, int length) {
-    if (length <= 0) {
+#include "average.h"
+
+double average(int* array, int length, average_type_t type) {
+    if (length <= 0 || type == NONE) {
         return 0;
     }
     double sum = 0.0;
     for (int i = 0; i < length; i++) {
-        sum += array[i];
+        if (type == NORMAL) {
+            sum += array[i];
+        } else if (type == SQUARED) {
+            sum += array[i] * array[i];
+        }
     }
     return sum/length;
 }
 ```
+*main.c*
+```c
+#include <stdio.h>
+
+#include "average.h"
+
+int main(int argc, char** argv) {
+    int array[5];
+
+    array[0] = 10;
+    array[1] = 3;
+    array[2] = 5;
+    array[3] = -8;
+    array[4] = 9;
+
+    double avg = average(array, 5, NORMAL);
+    printf("The average: %f\n", average);
+
+    avg = average(array, 5, SQUARED);
+    printf("The squared average: %f\n", average);
+    return 0;
+}
+```
+Building a C project means that we will compile all the source files within the code base and **first produce some relocatable object files**. Finally, we will c**ombine these relocatable object files** and produce a final product such as a **static library or executable binaries**.
+
+There are two important rules that you should know about using the C pipeline:
+1. **We only compile source files** - header files do not contain any actual C code other than declarations, thus we only compile `.c` files.
+2. **We compile each source file separately** - A project made up of 100 source files need to compile every source file separately, that means the compiler will be run 100 times.
+
+#### Preprocessing
+
+The first step in the C compilation pipeline is **preprocessing**. A source file has a number of header files included. Before the compilation begins, the **contents of these files are gathered by the preprocessor as a single body of C code**. This is created by copying content of the header files into the source file content.
+
+Also, other preprocessor directive must be resolved in this step. This preprocessed code is called a **translation unit**. 
+
+It is possible to ask compilers to dump the translation unit without compiling it further.
+
+```bash
+~/encylopedia_lelandica(main) » gcc -E 2_example/average.c          
+# 1 "notes/extreme_c/examples/2_example/average.c"
+# 1 "<built-in>" 1
+# 1 "<built-in>" 3
+# 366 "<built-in>" 3
+# 1 "<command line>" 1
+# 1 "<built-in>" 2
+# 1 "notes/extreme_c/examples/2_example/average.c" 2
+# 1 "notes/extreme_c/examples/2_example/average.h" 1
+
+
+typedef enum{
+    NONE,
+    NORMAL,
+    SQUARED
+} average_type_t;
+
+double average(int*, int, average_type_t);
+# 2 "notes/extreme_c/examples/2_example/average.c" 2
+
+double average(int* array, int length, average_type_t type) {
+    if (length <= 0 || type == NONE) {
+        return 0;
+    }
+    double sum = 0.0;
+    for (int i = 0; i < length; i++) {
+        if (type == NORMAL) {
+            sum += array[i];
+        } else if (type == SQUARED) {
+            sum += array[i] * array[i];
+        }
+    }
+    return sum/length;
+}
+```
+
+As you can see the declarations are copied from the header file into the translation unit. The translation unit for `main.c` is really large because it contains the `stdio.h` header file.
+
+#### Compilation
+
+<img src="image/2_compilation_pipeline.png">
+
+Once you have a translation unit, you can pass it as the input to the **compiler which will output** the corresponding **assembly code**. Assembly code is still human-readable, but it is machine-dependent and close to the hardware. It still needs further processing in order to become machine-level instructions.
+
+Let's take a look:
+
+```bash
+~/encylopedia_lelandica(main*) » gcc -S 2_example/average.c         
+----------------------------------------------------------------------------
+~/encylopedia_lelandica(main*) » cat average.s                                               
+
+        .build_version macos, 11, 0     sdk_version 11, 1
+        .globl  _average                ## -- Begin function average
+        .p2align        4, 0x90
+_average:                               ## @average
+        .cfi_startproc
+## %bb.0:
+        pushq   %rbp
+        .cfi_def_cfa_offset 16
+        .cfi_offset %rbp, -16
+        movq    %rsp, %rbp
+        .cfi_def_cfa_register %rbp
+        movq    %rdi, -16(%rbp)
+        movl    %esi, -20(%rbp)
+        movl    %edx, -24(%rbp)
+        cmpl    $0, -20(%rbp)
+        jle     LBB0_2
+## %bb.1:
+        cmpl    $0, -24(%rbp)
+        jne     LBB0_3
+LBB0_2:
+        xorps   %xmm0, %xmm0
+        movsd   %xmm0, -8(%rbp)
+        jmp     LBB0_13
+LBB0_3:
+        xorps   %xmm0, %xmm0
+        movsd   %xmm0, -32(%rbp)
+        movl    $0, -36(%rbp)
+LBB0_4:                                 ## =>This Inner Loop Header: Depth=1
+        movl    -36(%rbp), %eax
+        cmpl    -20(%rbp), %eax
+        jge     LBB0_12
+
+...etc
+```
+As part of the compilation step, the **compiler parses the translation unit and turns it into assembly code that is specific to the target architecture**. The assembly code above is built on a Intel 64-bit machine.
+
+**Producing assembly code from C code is the most important step in the compilation pipeline.**
+
+#### Assembling
+
+<img src="image/2_compilation_pipeline.png">
+
+The next step after compilation is **assembly**. The objective here is to **generate the actual machine-level instructions (machine code)** based on the assembly code generate by the compiler. Each architecture has its own assembler.
+
+Assembly produces a **relocatable object file** by processing the assembly code produced by the compiler. In most Unix-like systems, the assembler tool is `as`.
+
+The object files produced by the assembler are **not executable**. They only contain the machine-level instructions generated for a translation unit. There are a few more things that need to be put in place before a binary is executable.
+
+```bash
+~/encylopedia_lelandica(main*) » gcc -c 2_example/main.c         
+------------------------------------------------------------------
+~/encylopedia_lelandica(main*) »  ls                             
+2_example         main.o
+```
+
+Assembly is the **last step in compiling a single source file**. In other word, when we have corresponding relocatable object files for a source file, we are done with its compilation. At this stage we can continue compiling other source files.
+
+#### Linking
+
+<img src="image/2_compilation_pipeline.png">
+
+The next step in our example is **combining our relocatable object files** in order **to create another object file that is executable**. Luckily, that is exactly what linking does.
+
+In Unix-like systems, `ld` is the default linker.
+
+```bash
+~/encylopedia_lelandica(main*) » gcc -c average.c -o impl.o                                 
+~/encylopedia_lelandica(main*) » gcc -c main.c -o main.o                                    
+~/encylopedia_lelandica(main*) » gcc impl.o main.o                                          
+~/encylopedia_lelandica(main*) » ./a.out   
+The average: 3.800000
+The squared average: 55.800000
+```
+
+## Preprocessor
