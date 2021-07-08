@@ -267,3 +267,25 @@ The squared average: 55.800000
 ```
 
 ## Preprocessor
+
+Preprocessing is an essential feature of the C language. It allows you to:
+
+1. modify your source code before sending it for compilation. 
+2. divide your declarations into header files so that you can include functions into multiple source files.
+
+It's important to remember that the preprocessor only does simple tasks, such as copying contents from a file or expanding macros by text substitution. It knows nothing about C syntax, it uses a grammar that is almost independent of C grammar.
+
+In most Unix-like operating systems, there is a tool called `cpp` which stands for `C Pre-Processor` that is part of the C development bundle. It is used in the background by a C compiler to do the preprocessing steps.
+
+## Compiler
+
+Compilers accept the translation unit prepared by the preprocessor and **generate corresponding assembly instructions**. When multiple C sources are compiled into their equivalent assembly code, the existing tools in the platform, such as the assembler and the linker, manage the rest by making relocatable object files out of the assembly.
+
+The assembler and the linker, `as` and `ld` respectively, exist outside of `gcc` and any compiler more generally. They standalone and are available on any platform even without having `gcc` installed.
+
+This is because the platform is the most knowledgeable entity about the instruction set accepted by its processor. The **compiler is not usually aware of these constraints** unless it wants to do some optimizations.
+
+One of the challenges of C compilation is to **generate the correct assembly instructions for the target architecture**. It is possible to use `gcc` for architectures such as ARM, Intel x86, AMD and many more.
+
+The way that `gcc` overcomes this difficulty is to **split this task into two steps**
+
