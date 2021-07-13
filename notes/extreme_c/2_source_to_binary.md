@@ -288,4 +288,32 @@ This is because the platform is the most knowledgeable entity about the instruct
 One of the challenges of C compilation is to **generate the correct assembly instructions for the target architecture**. It is possible to use `gcc` for architectures such as ARM, Intel x86, AMD and many more.
 
 The way that `gcc` overcomes this difficulty is to **split this task into two steps**
+1. parsing the translation unit into a relocatable and **C-independent data structure** called an **Abstract Syntax Tree (AST)**. This step is architecture-independent and is performed by the **compiler frontend**.
+2. using the AST to generate the equivalent assembly instructions for the target architecture. This step is architecture-dependent and is performed by the **compiler backend**.
 
+### Abstract Syntax Tree
+
+ASTs can be generated for any programming language, not only C. Once the AST is produced, the compiler backend can start to optimize the AST and generate assembly code based on the optimized AST.
+
+## Assembler
+
+A platform has to have an assembler in order to produce object files that contain correct machine-level instructions. Object files can have different formats in various operating systems. **Each OS defines its own specific binary format** when it comes to storing machine level instructions. This means that you can have two different OS's on the same machine and the object files of assembled code will not be the same despite containing the same machine-level instructions.
+
+For Linux the platform-specific object files are known as **Executable and Linking Format (ELF)**.
+
+## Linker
+
+Before we talk about linking, let's talk about all the possible products in a C project:
+1. **executable files** - have a `.out` extension in most Unix-like OSes.
+2. **static libraries** - have the `.a` extension in most Unix-like OSes.
+3. **dynamic libraries** (shared object files) - have the `.so` extension in most Unix-like OSes.
+
+**Relocatable object files** are not considered as a product because they **are temporary**. They are the input to the linking step and they are used to produce the preceding products. The **linker** has the **sole responsibility of producing the preceding products from the given relocatable object files**.
+
+An **executable file can be run as a process**. It **must have an entry point** where the machine-level instructions are executed. While the `main` function is the entry point of a C program, the **entry point of an executable object file** is platform-dependent, and it **is not the `main` function**. The `main` function will eventually be called after some preparations made by a group of platform-specific instructions which have been added by the linker.
+
+A **static library is an archive file that contains several relocatable object files**. It is not produced by the linker directly, instead it is produced by the default archive program of the system, which in Unix-like systems is `ar`. **Static libraries are usually linked to other executable files**, and then they become part of those executable files.
+
+**Shared object files are created directly by the linker**. Before they are used they need to be **loaded into a running process at run time**. This is in opposition to static libraries that are **used at link time**. A single shared object file can be loaded and **used by many different processes at the same time**.
+
+### How does the linker work?
