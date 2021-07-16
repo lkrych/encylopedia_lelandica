@@ -1,7 +1,20 @@
 # From Source to Binary
 
 ## Table of Contents
-
+* [Introduction](#introduction)
+* [Compilation Pipeline](#compilation-pipeline)
+    * [Header files](#header-files)
+    * [Compiling an Example](#compiling-an-example)
+        * [Preprocessing](#preprocessing)
+        * [Compilation](#compilation)
+        * [Assembling](#assembling)
+        * [Linking](#linking)
+* [Preprocessor](#preprocessor)
+* [Compiler](#compiler)
+    * [Abstract Syntax Tree](#abstract-syntax-tree)
+* [Assembler](#assembler)
+* [Linker](#linker)
+    * [How does the Linker work?](#how-does-the-linker-work)
 ## Introduction
 
 In programming, everything starts with source code. Source code typically consists of a number of text files. The CPU cannot execute textual instructions, these files need to be translated by a compiler to machine-level instructions.
@@ -317,3 +330,88 @@ A **static library is an archive file that contains several relocatable object f
 **Shared object files are created directly by the linker**. Before they are used they need to be **loaded into a running process at run time**. This is in opposition to static libraries that are **used at link time**. A single shared object file can be loaded and **used by many different processes at the same time**.
 
 ### How does the linker work?
+
+A linker **combines all of the relocatable object files**, in addition to static libraries, in order **to create the final executable object file**.
+
+An object file contains the equivalent **machine-level instructions for a translation unit**. These instructions are **grouped** under sections called **symbols**. Let's talk about symbols in the context of an example.
+
+```c
+int average(int a, int b) {
+    return (a + b) / 2;
+}
+
+int sum(int* numbers, int count) {
+    int sum = 0;
+    for (int i = 0; i < count; i++) {
+        sum += numbers[i];
+    }
+    return sum;
+}
+```
+
+First we need to compile the preceding code to produce the corresponding object file.
+
+```bash
+$ gcc -c 2_linker.c -o target.o
+```
+
+We can then use the `nm` utility to look into the `target.o` object file to **see the symbols** that can be found inside the file.
+
+```bash
+$ nm target.o
+0000000000000000 T _average
+0000000000000020 T _sum
+```
+
+As you can see, the symbols defined in the object file have the same names as the functions defined in the code.
+
+We can use the `readelf` utility to **see the symbol table** in the object file.
+
+if you want to see the disassembly of the machine-level instructions, then you can use the `objdump` tool.
+
+```bash
+$ objdump -d target.o 
+target.o:     file format mach-o-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <_average>:
+   0:   55                      push   %rbp
+   1:   48 89 e5                mov    %rsp,%rbp
+   4:   89 7d fc                mov    %edi,-0x4(%rbp)
+   7:   89 75 f8                mov    %esi,-0x8(%rbp)
+   a:   8b 45 fc                mov    -0x4(%rbp),%eax
+   d:   03 45 f8                add    -0x8(%rbp),%eax
+  10:   99                      cltd
+  11:   b9 02 00 00 00          mov    $0x2,%ecx
+  16:   f7 f9                   idiv   %ecx
+  18:   5d                      pop    %rbp
+  19:   c3                      ret
+  1a:   66 0f 1f 44 00 00       nopw   0x0(%rax,%rax,1)
+
+0000000000000020 <_sum>:
+  20:   55                      push   %rbp
+  21:   48 89 e5                mov    %rsp,%rbp
+  24:   48 89 7d f8             mov    %rdi,-0x8(%rbp)
+  28:   89 75 f4                mov    %esi,-0xc(%rbp)
+  2b:   c7 45 f0 00 00 00 00    movl   $0x0,-0x10(%rbp)
+  32:   c7 45 ec 00 00 00 00    movl   $0x0,-0x14(%rbp)
+  39:   8b 45 ec                mov    -0x14(%rbp),%eax
+  3c:   3b 45 f4                cmp    -0xc(%rbp),%eax
+  3f:   0f 8d 1f 00 00 00       jge    64 <_sum+0x44>
+  45:   48 8b 45 f8             mov    -0x8(%rbp),%rax
+  49:   48 63 4d ec             movslq -0x14(%rbp),%rcx
+  4d:   8b 14 88                mov    (%rax,%rcx,4),%edx
+  50:   03 55 f0                add    -0x10(%rbp),%edx
+  53:   89 55 f0                mov    %edx,-0x10(%rbp)
+  56:   8b 45 ec                mov    -0x14(%rbp),%eax
+  59:   83 c0 01                add    $0x1,%eax
+  5c:   89 45 ec                mov    %eax,-0x14(%rbp)
+  5f:   e9 d5 ff ff ff          jmp    39 <_sum+0x19>
+  64:   8b 45 f0                mov    -0x10(%rbp),%eax
+  67:   5d                      pop    %rbp
+  68:   c3                      ret
+```
+
+You can see that each function symbol corresponds to a function that has been defined in the source code. The **linker gathers all the symbols from all the various relocatable object files** and puts them together into a bigger object file to form a complete binary.
