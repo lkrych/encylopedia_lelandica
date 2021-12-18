@@ -104,3 +104,8 @@ Main **memory is connected to the microprocessor** via the **memory bus**.
 If computers didn't have registers and the ALUs had to read data directly from memory the computations would be much slower.
 
 ### The File-Clerk Model: Part 3
+
+We can think of main memory as a document storage room located on another floor and the registers as a small, personal filing cabinet where the file clerk places the papers on which he's currently working. The clerk doesn't really know anything about the document storage room -- what it is or where it's located -- because his desk and his personal filing cabinet are all that he concerns himself with. 
+
+There is another office worker who is responsible for fetching the files in the storage room for the clerk. We can think of this office worker as a secretary. When the boss wants the clerk to work on a file that's not in the clerk's personal filing cabinet, the secretary must first be ordered, via a message from the boss to retrieve the file from the storage room and place it into the clerk's cabinet so the clerk can access it.
+
