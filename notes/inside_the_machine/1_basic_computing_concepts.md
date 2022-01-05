@@ -1,7 +1,23 @@
 # Basic Computing Concepts
 
 ## Table of Contents
-
+* [Introduction](#introduction)
+* [The Calculator Model of Computing](#the-calculator-model-of-computing)
+* [The File-Clerk Model of Computing](#the-fileclerk-model-of-computing)
+* [The Stored-Program Computer](#the-storedprogram-computer)
+* [Refining the File-Clerk model](#refining-the-fileclerk-model)
+* [The Register File](#the-register-file)
+* [RAM: When Registers Alone Won't Cut it](#ram-when-registers-alone-wont-cut-it)
+* [The File-Clerk Model: Part 3](#the-fileclerk-model-part-3)
+* [Adding Two Numbers Again](#adding-two-numbers-again)
+* [A Look at the Code Stream](#a-look-at-the-code-stream)
+* [General Instruction Types](#general-instruction-types)
+* [DLW-1](#dlw1)
+* [DLW-1 Arithmetic Instruction Format](#dlw1-arithmetic-instruction-format)
+* [DLW-1 Memory Instruction Format](#dlw1-memory-instruction-format)
+* [An Example DLW-1 Program](#an-example-dlw1-program)
+* [Immediate Addressing](#immediate-addressing)
+* [Register-Relative Addressing](#registerrelative-addressing)
 ### Introduction
 
 Computers do a vast array of things and yet all of them rely on a limited repertoire of technologies.
