@@ -16,15 +16,15 @@ The gates (transistors) and channels (wires) are a miniature version of the kind
 
 A computer **takes a stream of instructions (code) and a stream of data as input**, and it **produces a stream of results as an output**.
 
-<img src="img/1_1.png">
+<img src="image/1_1.png">
 
 For the purpose of an initial discussion, let's say that the code stream consists of different types of arithmetic operations and the data stream consists of data on which those operations operate. The results stream is thus the results of these operations. The results flow when the operators in the code stream are carried out on the operands in the data stream. 
 
-Like a calculator, the computer takes numbers and operators as input, performs the requested operation, and then displays the results. These results might be in the form of pixel values that make up a rendered scene in a game, or they might be the dollar values ina financial spreadsheet.
+Like a calculator, the computer takes numbers and operators as input, performs the requested operation, and then displays the results. These results might be in the form of pixel values that make up a rendered scene in a game, or they might be the dollar values in a financial spreadsheet.
 
 ### The File-Clerk Model of Computing
 
-While the **calculator model** is useful, it **isn't the only** or even the best **way to think about what computers do**.
+While the calculator model is useful, it **isn't the only or even the best way to think about what computers do**.
 
 Let's look at another definition.
 
@@ -38,7 +38,7 @@ This model is useful because it emphasizes the end product of the computation no
 
 Once we understand computers not in terms of the math they do, but in terms of the numbers they move and modify, we can begin to get a fuller picture of how they operate.
 
-In a nutshell, a** computer is a device that reads, modifies, and writes sequences of numbers**. These functions: read, modify and write, are the **most fundamental functions that a computer performs**.
+In a nutshell, **a computer is a device that reads, modifies, and writes sequences of numbers**. These functions: read, modify and write, are the **most fundamental functions that a computer performs**.
 
 ### The Stored-Program Computer
 
@@ -47,12 +47,13 @@ All computers consist of at least three fundamental types of structures needed t
 1. **Storage** - All computers have **a place to put numbers**, a place to read from and write to.
 2. **Arithmetic Logic Unit** - The device that **performs arithmetic operations** on numbers in the storage area. 
 
-First numbers are read from the storage in the ALU's data input port. Once inside the ALU, they're modified by means of an arithmetic calculation, and then they're written back to storage via the ALU's output port.
+* First numbers are read from the storage in the ALU's data input port. Once inside the ALU, they're modified by means of an arithmetic calculation, and then they're written back to storage via the ALU's output port.
+
 3. **Bus** - The means or transmitting numbers between the ALU and storage. The bus is **a network of transmission lines for shuttling numbers inside the computer**.
 
 The figure below depicts the code stream as a prerecorded list of instructions that is stored in a special area just like the data stream. 
 
-<img src="img/1_3.png">
+<img src="image/1_3.png">
 
 A modern **computer's ability to store and reuse prerecorded sequences of commands makes it fundamentally different** from the simpler calculating machines that preceded it.
 
@@ -94,7 +95,7 @@ Building on the previous three step description of what goes on when a computer'
 
 In order to make a computer that does useful work, you need to be able to **store very large data sets**. This is where the computer's main memory comes in. **Main memory**, which is always some type of **random access memory (RAM)**, stores the data set on which the computer operates, and only a small portion of that data set at a time is moved to the registers for easy access from the ALU.
 
-<img src="img/1_4.png">
+<img src="image/1_4.png">
 
 
 Main memory is **situated a quite a bit farther way from the ALU than the registers**. The **ALU and the registers are an internal part of the microprocessor**, but main memory is a completely separate component.
@@ -109,3 +110,131 @@ We can think of main memory as a document storage room located on another floor 
 
 There is another office worker who is responsible for fetching the files in the storage room for the clerk. We can think of this office worker as a secretary. When the boss wants the clerk to work on a file that's not in the clerk's personal filing cabinet, the secretary must first be ordered, via a message from the boss to retrieve the file from the storage room and place it into the clerk's cabinet so the clerk can access it.
 
+### Adding Two Numbers Again
+
+To add two numbers stored in main memory, a computer must perform the following steps:
+
+1. Load the two operands from main memory into the two sources registers.
+2. Add the contents of the source registers and place the results in the destination register using the ALU. This consists of the following substeps:
+    1. Read the contents of registers A and B into the ALU's input ports.
+    2. Add the contents of A and B in the ALU.
+    3. Write the result to register C via the ALU's output port.
+3. Store the contents of the destination register in main memory.
+
+The sub-steps of point 2 take a trivial amount of time to complete relative to steps 1 and 3.
+
+The existence of main memory means that the user (the boss in the file-clerk analogy), **must manage the flow of information between main memory and the CPU's registers**. 
+
+This means that the user must issue instructions to more than just the processor's ALU. Specifically the user must issue instructions to the parts of the CPU that handle memory traffic. 
+
+### A Look at the Code Stream
+
+Earlier, a code stream was defined as one of the inputs into the ALU. The code stream is an ordered sequence of operations. The term operation suggests a series of simple arithmetic operations, but the code stream consists of more than just arithmetic operations.
+
+It is better to say that the **code stream consists of an ordered sequence of instructions**. These instructions **tell the whole computer, not just the ALU, exactly what actions to perform**.
+
+#### General Instruction Types
+
+Instructions are grouped into ordered lists that when taken as a whole, tell the different parts of a computer to work together to perform a task. These ordered lists of instructions are called **programs**.
+
+In modern RISC microprocessors, the act of moving data between memory and the registers is under the explicit control of the program.
+
+If a programmer wants to add two numbers that are located in main memory and then store the result back in main memory, he or she must write a list of instructions to tell the computer exactly what to do. The following instructions must be used:
+
+1. a `load` instruction moves the two numbers from memory into the registers.
+2. an `add` instruction tells the ALU to add the two numbers.
+3. a `store` instruction tells the computer to place the result of the addition back into memory, overwriting what was previously there.
+
+These operations fall into two main categories:
+1. **Arithmetic instructions** - tell the ALU to perform a calculation (`add`, `sub`, `mul`, `div`, `AND`, `OR`, etc.)
+2. **Memory-access instructions** - tell the parts of the processor that deal with main memory to move data from and two main memory (`load`, `store`).
+
+### DLW-1
+
+To show how different instructions work we are going to use a simple hypothetical computer as an example: the DLW-1.
+
+For our purposes in this chapter, the DLW-1 microprocessor consists of 
+1. an ALU
+2. four registers, named A, B, C, and D. 
+3. main memory that has 256 cells numbered #0 to #255 (**the number that identifies an individual memory cell** is called an **address**).
+
+#### DLW-1 Arithmetic Instruction Format
+
+`instruction source1, source2, destination`
+
+There are four parts to this instruction format, each of which is called a field:
+1. instruction field - specifies the type of operation being performed (addition, substraction, etc.)
+2. The two source fields -  tell the computer which registers hold the numbers being operated on.
+3. The destination field - tells the computer which register to place the result in.
+
+<img src="image/1_add_instr.png">
+
+#### DLW-1 Memory Instruction Format
+
+`instruction source destination`
+
+For all memory accesses:
+1. the instruction field - specifies the type of memory operation to perform (load, store, etc.) 
+
+In the case of `load`, the source tells the computer which memory address to fetch the data from, while the destination field specifies which register to put it in. 
+
+Conversely in the case of `store`, the source field tells the computer which register to take the data from, and the destination field specifies which memory address to write to. 
+
+#### An Example DLW-1 Program
+
+<img src="image/1_program_1.png">
+
+<img src="image/1_memory_1.png">
+
+<img src="image/1_memory_2.png">
+
+### Immediate Addressing
+
+The example used thus far presumes that the programmer knows the exact memory location of every number he or she wants to load and store. This is quite impractical in a real-world environment.
+
+To resolve this problem, **modern computers allow the contents of a register to be used as a memory address**.
+
+All of the arithmetic instructions so far have required two source registers as input. However, it is possible to replace one or both of the source registers with an explicit numerical value. Let's look at an example.
+
+
+<img src="image/1_immediate.png">
+
+In this example we increase whatever number is in register A by 2. We don't need to load the value 2 into a second source register.
+
+Immediate values can be used to specify memory addresses as well. If you look at the previous examples the instruction:
+
+`load #12 A`
+
+uses the regular whole number 12, plus the # sign to let the computer know that this particular immediate value is a memory address.
+
+Memory addresses are just regular whole number that are marked with the # sign. Because they are whole numbers they can be stored in registers (and memory). This means that the contents of a register, like D, could be construed as representing a memory address.
+
+<img src="image/1_program_3.png">
+
+<img src="image/1_memory_1.png">
+
+<img src="image/1_memory_2.png">
+
+The first instruction in this program loads the number 12 from memory cell #11 into register D. The second instruction then uses the content of D (the value 12) as a memory address in order to load register A into memory location #12.
+
+### Register-Relative Addressing
+
+In real-world programs, `load` and `store` most often use **register-relative addressing**, which is a way of specifying memory addresses relative to a register that contains a fixed base address.
+
+For example, we've been using D to store memory addresses. So let's say that on DLW-1 we can assume that unless it is explicitly told to do otherwise, the OS always loads the starting address of a program's data segment into D.
+
+The computer carves up main memory into multiple segments, some of which store code and some of which store data.
+
+A data segment is a block of contiguous memory cells that a program stores all of its data in, so if a programmer knows a data segment's starting address ( ase address) in memory, he/she can access all the other locations using the following pattern:
+
+`base address + offset`
+
+where offset is the distance in bytes of the desired memory location.
+
+<img src="image/1_offset.png">
+
+This technique requires that a quick addition operation be part of the execution of the load instruction, so this is why the load-store units in modern processors contain very fast integer addition hardware.
+
+By using register-relative addressing instead of absolute addressing, a programmer can write programs without knowing the exact location of data in memory. All the programmer needs to know is which register the OS will place the data segment's base address in.
+
+Because both memory addresses and regular integer numbers are stored in the same registers, these registers are called general-purpose registers (GPRs)
