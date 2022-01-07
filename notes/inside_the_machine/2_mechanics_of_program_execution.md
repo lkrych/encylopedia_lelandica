@@ -1,7 +1,26 @@
 # Mechanics of Program Execution
 
 ## Table of Contents
-
+* [Opcodes and Machine Languages](#opcodes-and-machine-languages)
+    * [Machine Language on the DLW-1](#machine-language-on-the-dlw1)
+    * [Binary Encoding of Arithmetic Instructions](#binary-encoding-of-arithmetic-instructions)
+    * [Binary Encoding of Memory Access Instructions](#binary-encoding-of-memory-access-instructions)
+        * [Load Instruction](#load-instruction)
+        * [The Store instruction](#the-store-instruction)
+    * [Translating an Example Program into Machine Language](#translating-an-example-program-into-machine-language)
+* [The Programming Model and ISA](#the-programming-model-and-isa)
+    * [The Programming Model](#the-programming-model)
+    * [The Instruction Register and the Program Counter](#the-instruction-register-and-the-program-counter)
+    * [Instruction Fetch](#instruction-fetch)
+    * [Running a Simple Program: The Fetch-Execute Loop](#running-a-simple-program-the-fetchexecute-loop)
+* [The Clock](#the-clock)
+* [Branch Instructions](#branch-instructions)
+    * [Unconditional Branch](#unconditional-branch)
+    * [Conditional Branch](#conditional-branch)
+    * [Branch Instructions and the fetch-execute loop](#branch-instructions-and-the-fetchexecute-loop)
+    * [Branch Instructions as a special type of Load](#branch-instructions-as-a-special-type-of-load)
+    * [Branch Instructions and Labels](#branch-instructions-and-labels)
+* [How does a computer start up?](#how-does-a-computer-start-up)
 ## Opcodes and Machine Languages
 
 Both memory addresses and instructions are ordinary numbers that can be stored in memory. All of the instructions in a program are represented inside the computer as list of numbers. Indeed, a program is one long list of numbers stored in a series of memory locations.
