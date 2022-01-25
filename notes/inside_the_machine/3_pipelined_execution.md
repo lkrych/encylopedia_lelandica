@@ -136,3 +136,66 @@ The number of pipeline stages is called the **pipeline depth**. Let's say that e
 At the start of the fifth nanosecond, the pipeline is now full, and the processor can begin completing instructions at a rate of one instruction per nanosecond. This is a fourfold improvement over the previous example.
 
 ### Shrinking the clock
+
+As you can see, the role of the CPU clock changes slightly in the pipelined processor. Because all pipeline stages must not work together simultaneously and be ready at the start of each new nanosecond to hand over the results of their work, **the clock is needed to coordinate the activity of the whole pipeline**.
+
+The clock cycle time is shrunk to match the time it takes each stage to complete its work. This new method of clocking the processor means that a new instruction is not necessarily completed at the close of each clock cycle, as was the case in the single-cycle processor. Instead, a new instruction will be completed at the close of only those clock cycles in which the write stage has been working on an instruction.
+### Shrinking program execution time
+
+The total execution time for each individual instruction is not changed by pipelining. It still takes an instruction 4 ns to make it through the processor. **Pipelining doesn't speed up instruction execution time**, but **it does speed up program execution time** (the number of nanoseconds it takes to execute an entire program).
+
+### The speedup from pipelining
+
+In general, **the speedup in completion rate** versus a single-cycle implementation **that's gained from pipelining** is ideally **equal to the number of pipeline stages**. This speedup is possible because the more pipeline stages there are in a processor, the more instructions the processor can work on simultaneously. 
+
+Some processors have a five-stage pipeline, some have a six-stage pipeline, and many have 10 or 20 stages. In such cases, the CPU designer must slice up the instruction lifecycle into the desired number of stages in such a way that all the stages are equal in length.
+
+### Program Execution Time and Completion Rate
+
+If the program that the single-cycle processor is running consisted of only four instructions, that program would have a program execution time of 16ns, or 
+`4 instructions / 0.25 instructions/ns`.
+
+In general, a program's execution time is equal to the total number of instructions divided by the processor's instruction completion rate.
+
+`program execution time = number of instructions / instruction completion rate`
+
+Most of the time **when we are talking about processor performance** we are talking about **program execution time**.
+
+From the equation, we can see that program execution time can be reduced in one of two ways:
+1. by a reduction in the number of instructions per program
+2. by an increase in the processor's completion rate.
+
+With pipelined processors, the relationship between instruction execution time and completion rate is more complex. Pipelined processors allow you to increase the processor's completion rate without altering the instruction execution time. 
+
+Strangely enough, **pipelining improvements on completion rate often come at the price of increased instruction execution times**. This means for pipelining to improve performance, the processor's completion rate must be as high as possible over the course of program execution.
+
+### The relationship between completion rate and program execution time
+
+Let's take a look back at the single-cycle processor and the four-stage processor we introduced earlier.
+
+<img src="image/3_6.png">
+<img src="image/3_7.png">
+
+If we look at the ninth nanosecond, we can see that the non-pipelined processor has two completed instructions, and the pipelined processor has four completed instructions. This is not a fourfold improvement in the amount of complete instructions.
+
+The important point here is that it takes the pipelined processor some time to fill up with instructions. The processor's average completion rate will approach the theoretical maximum completion rate only if it can go for long stretches with its pipeline full on every clock cycle.
+
+<img src="image/3_9.png">
+
+## Instruction throughput and pipeline stalls
+
+Pipelining isn't totally free. It adds complexity to the control logic of the microprocessor because all the stages need to be kept in sync, and more importantly it adds complexity to the ways we assess processor performance.
+
+### Instruction Throughput
+
+Up until now we've talked about microprocessor performance mainly in terms of instruction completion rate, or the number of instructions that the processor's pipeline can complete each nanosecond. 
+
+A more common performance metric is the pipeline's **instruction throughput**: **the number of instructions that the processor completes each clock cycle**. You will see this referred to as **instructions per clock (IPC)**.
+
+**Maximum theoretical instruction throughput**: The theoretical maximum number of instructions that the processor can finish executing on each clock cycle.
+
+**Average instruction throughput**: The average number of instructions per clock (IPC) that the processor has actually completed over a certain number of cycles.
+
+
+
+### Pipeline Stalls
