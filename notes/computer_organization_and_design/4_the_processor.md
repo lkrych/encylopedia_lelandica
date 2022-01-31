@@ -241,3 +241,36 @@ Once the truth table has been constructed, it can be turned into gates.
 #### Designing the Main Control Unit
 
 Now that we have described how to design an ALU that uses the function code and a 2-bit signal as its control inputs, we can return to looking at the rest of the control.
+
+To begin, let's identify the fields of an instruction and the control lines that are needed for the datapath we constructed:
+
+<img src="image/4_14.png">
+
+1. The op field (specifies what kind of instruction it is) is always contained in bits 31:26
+2. The two registers to be read are always specified by the rs and rt fields, at positions 25:21 and 20:16. This is true for R-type instructions, branch equal and `store`.
+3. The base register for `load` and `store` instructions is always in bit positions 25:21
+4. The 16-bit offset for `beq`, `load` and `store` is always in position 15:0
+5. The destination register is in one of two places
+    1. For `load` it is in bit positions 20:16
+    2. For R-type instructions it is in 15:11
+    This means we need a multiplexor to select which field of the instruction is used to indicate the register number to be written
+
+Using this information we can add the instruction labels and extra multiplexor (for the write register number input of the register file) to the simple datapath.
+
+<img src="image/4_15.png">
+
+The figure shows seven single-bit control lines plus the 2-bit ALUOp control signal. Let's look at the definitions of the other control signals.
+
+<img src="image/4_16.png">
+
+The **control unit can set all but one of the control signals based solely on the opcode field of the instruction**. 
+
+The PCSrc control line is the exception. That control line should be asserted if the instruction is branch on equal and the Zero output of the ALU is asserted. To generate the PCSrc signal we will need to AND together a signal from the control unit, which we will call Branch, with the Zero signal of the ALU.
+
+These nine control signals (seven from the figure, and two for the ALUOp) can now be set on the basis of six input signals to the control unit, which are the opcode bits 31:26.
+
+<img src="image/4_17.png">
+
+Because the setting of the control lines depends only the opcode, we define whether each control signal should be 0, 1 or don't care (X) for each of the opcode values in the following table:
+
+<img src="image/4_18.png">
