@@ -274,3 +274,27 @@ These nine control signals (seven from the figure, and two for the ALUOp) can no
 Because the setting of the control lines depends only the opcode, we define whether each control signal should be 0, 1 or don't care (X) for each of the opcode values in the following table:
 
 <img src="image/4_18.png">
+
+#### Operation of the Datapath
+
+Let's look at the flow of three different instruction classes through the datapath. We will specifically look at the asserted control signals and the active datapath elements. A multiplexor whose control is 0 has a definite action, even if its control line is not highlighted.
+
+First let's look at the operation of the datapath for an R-type instruction: `add $t1, $t2, $t3`. 
+
+Although everything occurs in one clock cycle, we can think of four steps to execute the instruction:
+1. The instruction is fetched and the PC is incremented.
+2. Two registers, $t2 and $t3 are read from the register file, also the main control unit computes the setting of the control lines.
+3. The ALU operates on the data read from the register file, using the function code (bits 5:0) to generate the ALU function.
+4. The result from the ALU is written into the register file using bits 15:11 of the instruction to select the destination register ($t1)
+
+<img src="image/4_19.png">
+
+Similarly, we can illustrate the execution of a `load` word such as `lw $t1, offset($t2)`. We can think of a load instruction as operating in five steps:
+
+1. An instruction is fetched from the instruction memory, and the PC is incremented.
+2. A register ($t2) value is read from the register file.
+3. The ALU computes the sum of the value read from the register file and the sign-extended, lower 16-bits of the instruction (offset).
+4. The sum from the ALU is used as the address for the data memory
+5. The data from the memory unit is written into the register file, the register destination is given by bits 20:16 of the instruction ($t1).
+
+<img src="image/4_20.png">
