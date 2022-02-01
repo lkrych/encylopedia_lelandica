@@ -298,3 +298,87 @@ Similarly, we can illustrate the execution of a `load` word such as `lw $t1, off
 5. The data from the memory unit is written into the register file, the register destination is given by bits 20:16 of the instruction ($t1).
 
 <img src="image/4_20.png">
+
+Finally, we can show the operation of the branch-on-equal instruction, such as `beq $t1, $t2, offset` in the same fashion. It operates much like an R-format instruction, but the ALu output is used to determine whether the PC is written with PC+4 or the branch target address. The steps of execution are:
+
+1. An instruction is fetched from the instruction memory and the PC is implemented.
+2. Two registers, $t1 and $t2 are read from the register file.
+3. The ALU performs a subtract on the data values read from the register file. The value of the PC+4 is added to the sign-extended, lower 16 bits of the instruction (offset) shifted left by two: the result is the branch target address.
+4. The Zero result from the ALU is used to decide which adder result to store into the PC.
+
+<img src="image/4_21.png">
+
+#### Finalizing Control
+
+The control function can be defined precisely using the table we introduced earlier.
+
+<img src="image/4_18.png">
+
+The outputs are the control lines, and the input is the 6-bit opcode field. Thus we can create a truth table for each of the outputs based on the binary encoding of the opcodes.
+
+Another table shows the logic in the control unit as one large truth table that combines the outputs and uses opcode bits as inputs. It completely specifies the control function.
+
+<img src="image/4_22.png">
+
+#### Why a Single-Cycle Implementation is not used today
+
+Although this design will work, it would not be used in modern designs because **it is inefficient**. The clock cycle must be the same length for every instruction in this design. This also means that the longest possible path in the processor determines the clock cycle. 
+
+The penalty for using a single-cycle sign with a fixed clock cycle is significant, but might be considered acceptable for this small instruction set. Early computers did use this implementation technique. However, if we tried to implement the floating-point unit or an instruction set with more complex instructions, this design wouldn't work well at all.
+
+### An Overview of Pipelining
+
+**Pipelining** is an implementation technique in which **multiple instructions are overlapped in execution**. It is used nearly universally today.
+
+Anyone who has done a lot of laundry has intuitively used pipelining. The non-pipelined approach to laundry would be the following three steps:
+
+1. Place one load of dirty clothes into the washer.
+2. When the washer is finished, place the load in the dryer.
+3. When the dryer is finished, fold the laundry.
+4. When the folding is finished, put the clothes away.
+
+When this is done, start on the next load.
+
+Obviously, this is inefficient, the pipelined approach is that when the washer is finished with the first load and placed in the dryer, you load the washer with the second dirty load. When the first load is dry, you place it on the table to fold, move the wet load to the dryer, and put the next dirty load into the washer.
+
+<img src="image/4_25.png">
+
+All the steps (called stages in pipelining) are operating concurrently. As long as we have separate resources for each stage, we can pipeline tasks.
+
+Pipelining does not decrease the time to complete one load of laundry, but when we have many loads of laundry to do, the improvement in throughput decreases the total time to complete the work. If all the stages take about the same amount of time and there is enough work to do, then the speed-up due to pipelining is equal to the number of stages in the pipeline. Therefore pipelined laundry is potentially four times faster than non-pipelined laundry.
+
+This same principle applies to processors where we pipeline instruction execution. MIPS instructions classically take five steps:
+1. Fetch the instructions from memory.
+2. Read registers while decoding the instruction. The regular format of MIPS instructions allows readings and decoding to occur simultaneously.
+3. Execute the operation or calculate an address.
+4. Access an operand in data memory.
+5. Write the result into a register.
+
+The pipeline we explore has five stages.
+
+To make this discussion concrete, let's create a pipeline. In this example, and in the rest of the chapter, we limit our attention to eight instructions: `load` word (lw), `store` word (sw), `add`, `sub`, `and`, `or`, `slt`, and `beq`.
+
+Compare the average time between instructions of a single-cycle implementation in which all instruction take on clock cycle, to a pipelined implementation. The operation times for the major functional units in this example are:
+1. 200ps for memory access
+2. 200ps for ALU operation
+3. 100ps for register read and write
+
+Let's use these values to break down the instructions.
+
+<img src="image/4_26.png">
+
+All the pipeline stages take a single clock cycle, so the clock cycle must be long enough to accommodate the slowest operation.
+
+<img src="image/4_27.png">
+
+Just as the single cycle design must take the worst-case clock cycle of 800 ps, even though some instructions can be 500 ps, the pipelined execution must have the worst-case clock cycle of 200ps even though some stages take only 100ps. Pipelining still offers a fourfold improvement.
+
+We can turn this pipelining speed up into a formula. If the stages are perfectly balanced, then the time between instructions on the pipelined processor is equal to:
+
+<img src="image/4_pipeline_time_between.png">
+
+Under ideal conditions and with a large number of instructions, the speed-up from pipelining is approximately equal to the number of pipe stages. This formula suggests that a five-stage pipeline should offer nearly a five-fold improvement over the 800ps non-pipelined time, or 160ps clock cycle. The example shows, however, that **the stages may be imperfectly balanced**. Moreover, pipelining involves some overhead, thus the time per instruction will exceed the minimum possible, the speed-up will be less than the number of pipeline stages.
+
+Pipelining **improves performance by increasing instruction throughput**, as opposed to decreasing the execution time of an individual instruction.
+
+#### Designing Instruction Sets for Pipelining
