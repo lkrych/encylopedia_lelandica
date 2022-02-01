@@ -393,7 +393,7 @@ Third, memory operands only appear in `load`s or `store`s in MIPS. This restrict
 
 Fourth, operands must be aligned in memory, hence we need not worry about a single data transfer instruction requiring two data memory accesses. The requested data can be transferred between processor and memory in a single pipeline stage.
 
-#### Pipeline Hazards
+#### Pipeline Hazards - Structural Hazard
 
 There are situations in pipelining where **the next instruction cannot execute in the following clock cycle**. These events are called **hazards**.
 
@@ -401,11 +401,13 @@ The first hazard is called a **structural hazard**. It means that the **hardware
 
 As we said earlier, the MIPS instruction set was designed to be pipelined, making it fairy easy for designers to avoid structural hazards.
 
+#### Pipeline Hazards - Data Hazard
+
 The second hazard is called a **data hazard**. It occurs when the **pipeline must be stalled because one step must wait for another to complete**. Suppose you found a sock at the folding station for which no match existed. One possible strategy is to run to your room and search for the match. While you are searching the pipeline slows down because stages can't be swapped.
 
 In a computer pipeline, **data hazards arise from the dependence of one instruction on an earlier one** that is still in the pipeline (a relationship that does not really exist when doing laundry).
 
-Let's look at an example: Suppose we have an add instruction followed immediately by a subtract instruction that uses the sum.
+Let's look at an example: Suppose we have an `add` instruction followed immediately by a `sub` instruction that uses the sum.
 
 ```
 add $s0, $t0, $t1
@@ -420,4 +422,42 @@ Although we could rely on compilers to remove all such hazards, the results woul
 
 This graphic shows the how we forward the value in $s0 after the execution stage of the add instruction as input to the execution stage of the sub instruction.
 
-Forwarding works well and we will cover it in more detail later, but it cannot prevent all pipeline stalls.
+Forwarding works well and we will cover it in more detail later, but it cannot prevent all pipeline stalls. For example, suppose the first instruction was a `load` instead of an `add`.
+
+If this was the case, the desired data would be available only after the fourth stage of the first instruction in the dependence, which is too late for the input stage of the third stage of `sub`. Hence, even with forwarding we would have to stall one stage for a **load-use data hazard**. A load-use data hazard is a specific form of data hazard in which the data being loaded by a `load` instruction has not yet become available when it is needed by another instruction. 
+
+<img src="image/4_30.png">
+
+This figure shows an important pipeline concept, officially called a **pipeline stall**, but also given the nickname **bubble**. We will discuss how to handle hard cases like this either using hardware detection and stalls or software that reorders code to try and avoid these load-use pipeline stalls.
+
+#### Pipeline Hazards - Control Hazard
+
+The third type of hazard is called a **control hazard**, which arises from the **need to make a decision based on the results of one instruction while others are executing**.
+
+Control hazards happen when there are **branch instructions**. Notice that **we must begin fetching the instruction following the branch on the very next clock cycle**. Nevertheless, **the pipeline cannot possibly know what the next instruction should be** since it only received the branch instruction in memory! 
+
+One possible solution is to stall immediately after we fetch a branch, waiting until the pipeline determines the outcome of the branch and knows what instruction address to fetch from. Let's assume that we put in enough extra hardware so that we can test registers, calculate the branch address, and update the PC during the second stage of the pipeline. Even with extra hardware, the pipeline involving conditional branches would look like the following:
+
+<img src="image/4_31.png">
+
+If we cannot resolve the branch in the second stage, as is often the case for longer pipelines, then we'd see an even larger slowdown if we stall on branches. **The cost of this option is too high** for most computers to use and motives a second solution.
+
+The second solution is to **predict**. Try to guess the next pipeline instruction, if you are right, then the pipeline continues to flow, if not you will need to flush the pipeline and load the correct instructions.
+
+One simple heuristic to use is to predict the branches will always be untaken. When you're right the pipeline proceeds at full speed. Only when branches are taken does the pipeline stall.
+
+<img src="image/4_32.png">
+
+A more sophisticated version of **branch prediction** (a method of resolving a branch hazard) would have some branches predicted as taken and some as untaken. In the case of programming, at the bottom of loops are branches that jump back to the top of the loop. Since they are likely to be taken and they branch backward, we could always predict taken for branches that jump back to an earlier address.
+
+Such rigid approaches rely on stereotypical behavior and don't account for the individuality of a specific branch instruction. Dynamic hardware predictors, in contrast, make their guesses depending on the behavior of each branch and may changes predictions for a branch over the life of a program.
+
+One popular approach to dynamic prediction of branches is **keeping a history for each branch as taken or untaken**, and then using the recent past behavior to predict the future. We will see in future sections thate the amount of history that can be used is extensive and branch predictors can operate with more than 90% accuracy. 
+
+When the guess is wrong, the pipeline control must ensure that the instructions following the wrongly guessed branch have no effect and must restart the pipeline from the proper branch address.
+
+As in the case of all other solutions to control hazards, longer pipelines exacerbate the problem, in this case by raising the cost of misprediction.
+
+One last approach to control hazards is **delayed decision making** or **delayed branch**. In this solution the delayed branch always executes the next sequential instruction, with the branch taking place after that one instruction delay. MIPS software will place an instruction immediately after the delayed branch instruction that is not affected by the branch, and a taken branch changes the address of the instruction that follows this safe instruction. 
+
+#### Pipeline Overview Summary
