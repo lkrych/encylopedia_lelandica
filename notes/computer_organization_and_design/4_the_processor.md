@@ -382,3 +382,42 @@ Under ideal conditions and with a large number of instructions, the speed-up fro
 Pipelining **improves performance by increasing instruction throughput**, as opposed to decreasing the execution time of an individual instruction.
 
 #### Designing Instruction Sets for Pipelining
+
+The MIPS instruction set was designed for pipelined execution. What does this mean? 
+
+Well, first, **all MIPS instructions are the same length**. This restriction makes it much **easier to fetch** instructions in the first pipeline stage **and to decode** them in the second stage. In the x86 instruction set where instructions vary from 1 to 15 bytes, pipelining is considerably more challenging.
+
+Second, MIPS has only a **few instruction formats**, with the source register fields being located in the same place in each instruction. This symmetry means that the second stage can begin reading the register file at the same time that the hardware is determining what type of instruction was fetched. If MIPS instruction formats were not symmetric, we would need to split stage 2, resulting in six pipeline stages.
+
+Third, memory operands only appear in `load`s or `store`s in MIPS. This restriction means we can use the execute stage to calculate the memory address and then access memory in the following stage.
+
+Fourth, operands must be aligned in memory, hence we need not worry about a single data transfer instruction requiring two data memory accesses. The requested data can be transferred between processor and memory in a single pipeline stage.
+
+#### Pipeline Hazards
+
+There are situations in pipelining where **the next instruction cannot execute in the following clock cycle**. These events are called **hazards**.
+
+The first hazard is called a **structural hazard**. It means that the **hardware cannot support the combination of instructions that we want to execute in the same clock cycle**. Following up on our laundry metaphor, a structural hazard would be if for some reason we couldn't put away the folded clothes, this would cause clothes coming out of the dryer to back up, etc.
+
+As we said earlier, the MIPS instruction set was designed to be pipelined, making it fairy easy for designers to avoid structural hazards.
+
+The second hazard is called a **data hazard**. It occurs when the **pipeline must be stalled because one step must wait for another to complete**. Suppose you found a sock at the folding station for which no match existed. One possible strategy is to run to your room and search for the match. While you are searching the pipeline slows down because stages can't be swapped.
+
+In a computer pipeline, **data hazards arise from the dependence of one instruction on an earlier one** that is still in the pipeline (a relationship that does not really exist when doing laundry).
+
+Let's look at an example: Suppose we have an add instruction followed immediately by a subtract instruction that uses the sum.
+
+```
+add $s0, $t0, $t1
+sub $t2, $s0, $t3
+```
+
+Without intervention, a data hazard could severely stall the pipeline. **The add instruction doesn't write its result until the fifth stage**, meaning that we would have to waste three clock cycles in the pipeline.
+
+Although we could rely on compilers to remove all such hazards, the results would not be satisfactory. The **primary solution** is based on the observation that **we don't need to wait for the instruction to complete before trying to resolve the data hazard**. For the code sequence above, as soon as the ALU creates the sum for the add, we can supply it as an input to the subtract. Adding extra hardware to retrieve the missing item early from the internal resources is called **forwarding** or **bypassing**.
+
+<img src="image/4_29.png">
+
+This graphic shows the how we forward the value in $s0 after the execution stage of the add instruction as input to the execution stage of the sub instruction.
+
+Forwarding works well and we will cover it in more detail later, but it cannot prevent all pipeline stalls.
