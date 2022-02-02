@@ -461,3 +461,15 @@ As in the case of all other solutions to control hazards, longer pipelines exace
 One last approach to control hazards is **delayed decision making** or **delayed branch**. In this solution the delayed branch always executes the next sequential instruction, with the branch taking place after that one instruction delay. MIPS software will place an instruction immediately after the delayed branch instruction that is not affected by the branch, and a taken branch changes the address of the instruction that follows this safe instruction. 
 
 #### Pipeline Overview Summary
+
+Pipelining is a technique that exploits parallelism among the instructions in a sequential instruction stream. It has substantial advantage that unlike programing a multiprocessor, it is invisible to the programmer.
+
+In the next few sections, we cover the concept of pipelining using the MIPS instruction set from the single-cycle implementation. We then look at the problems that pipelining introduces and the performance attainable under typical situations.
+
+Outside the memory system, **the effective operation of the pipeline is usually the most important factor in determining the CPI of the processor** and hence its **performance**. Understanding the performance of a modern multiple-issue pipelined processor is complex and requires more than understanding the issues that arise in a simple pipelined processor. Nonetheless, structural, data and control hazards remain important in both types of pipelines.
+
+For modern pipelines, **structural hazards usually resolve around the floating-point unit**, which may not be fully pipelined, while **control hazards are usually more of a problem in integer programs**, which tend to have higher branch frequencies as well as less predictable branches. Data hazards can be performance bottlenecks in both integer and floating-point programs. Often it is easier to deal with data hazards in floating-point programs because the lower branch frequency and more regular memory access patterns allow the compiler to try to schedule instructions to avoid hazards.
+
+In summary, **pipelining increases the number of simultaneously executing instructions and the rate at which instructions are started and completed**. Pipelining **does not reduce the time it takes to complete an individual instruction**, also called **latency**.
+
+### Pipelined Datapath and Control
