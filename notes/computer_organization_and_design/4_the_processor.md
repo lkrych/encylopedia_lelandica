@@ -473,3 +473,20 @@ For modern pipelines, **structural hazards usually resolve around the floating-p
 In summary, **pipelining increases the number of simultaneously executing instructions and the rate at which instructions are started and completed**. Pipelining **does not reduce the time it takes to complete an individual instruction**, also called **latency**.
 
 ### Pipelined Datapath and Control
+
+<img src="image/4_33.png">
+
+The figure above shows the single-cycle datapath with the pipeline stages identified. The division of an instruction into five stages means a five-stage pipeline, which in turn means **up to five instructions will be in execution during a single clock cycle**.
+
+Thus, we must separate the datapath into five pieces, with each piece named corresponding to a stage of instruction execution:
+
+1. IF: Instruction fetch
+2. ID: Instruction decode and register file read
+3. EX: Execution or address calculation
+4. MEM: Data memory access
+5. WB: Write Back
+
+In the figure, these five components correspond roughly to the way the datapath is drawn, instructions and data move generally from left to right. There are two exceptions:
+
+* the write-back stage, which places the result back into the register file in the middle of the datapath. This can lead to data hazards.
+* the selection of the next value of the PC, choosing between the incremented PC and the branch address from the MEM stage. This can lead to control hazards.
