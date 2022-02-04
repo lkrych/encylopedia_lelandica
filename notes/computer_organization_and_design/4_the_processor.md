@@ -490,3 +490,47 @@ In the figure, these five components correspond roughly to the way the datapath 
 
 * the write-back stage, which places the result back into the register file in the middle of the datapath. This can lead to data hazards.
 * the selection of the next value of the PC, choosing between the incremented PC and the branch address from the MEM stage. This can lead to control hazards.
+
+Data flowing from right to left does not affect the current instruction, these reverse data movements influence only later instructions in the pipeline.
+
+One way to visualize pipelined instruction is to pretend that each instruction has its own datapath, and then to place these datapaths on a timeline to show their relationship.
+
+<img src="image/4_34.png">
+
+The figure above seems to suggest that three instructions need three datapaths, instead we add registers to hold data so that portions of a single datapath can be shared during instruction execution.
+
+For example, the figure above shows the instruction memory  is used during only one of the five stages of an instruction, allowing it to be shared by following instructions during the other four stages. To retain the value of an individual instruction for its other four stages, the value read from instruction memory must be saved in a register. Similar arguments apply to every pipeline stage, so we must place registers wherever there are dividing lines between stages.
+
+The figure above stylizes the registers into two logical parts: registers read during register fetch and registers written during write back.
+
+The following figure shows the pipelined datapath with the pipeline registers highlighted.
+
+<img src="image/4_35.png">
+
+All instructions advance during each clock cycle from one pipeline register to the next. The registers are named for the two stages separated by that register.
+
+Notice that there is no pipeline register at the end of the write back stage. All instructions must update some state int he processor, the register file, memory, or the PC, so a separate pipeline register is redundant to the state that must be updated.
+
+Every instruction updates the PC, whether by incrementing it or setting it to a branch destination address. The PC can be thought of as a pipeline register: one that feeds the IF stage of the pipeline. However, the PC is part of the visible architectural stage; its contents must be saved when an exception occurs, while the contents of pipeline registers can be discarded.
+
+We will now look at **what happens in a datapath as a load instruction goes through the five stages of pipelined execution**. We will highlight the right half of registers/memory when they are being read and the left half when they are being written. The five stages for the `lw` instruction are as following:
+
+1. **Instruction fetch**: The instruction is being read from meory using the address in teh PC and then being placed in the IF/ID pipeline register. The PC address is incremented by 4 and then written back into the PC to be ready for the next clock cycle. This incremented address is also saved in the IF/ID pipeline register in case it is needed later for an instruction, such as `beq`. 
+<img src="image/4_36_fetch.png">
+
+
+2. **Instruction decode and register file read**: The instruction portion of the IF/ID pipeline register supplies the 16-bit immediate field, which is sign-extended to 32 bits, and the register numbers to read the two registers. All three values are stored in the ID/EX pipeline register, along with the incremented PC address.
+
+<img src="image/4_36_decode.png">
+
+3. **Execute or address calculation**: The load instruction reads the contents of register 1 and the sign-extended immediate from the ID/EX pipeline register and adds them using the ALU. That sum is placed in the EX/MEM pipeline register.
+
+<img src="image/4_37.png">
+
+4. **Memory Access**: The load instruction reads the data memory using the address from the EX/MEM pipeline register and loads the data into the Mem/WB pipeline register.
+
+<img src="image/4_38_mem.png">
+
+5. **Write-back**: The load instruction reads the data from the MEM/WB pipeline register and writes it into the register file in the middle of the figure.
+
+<img src="image/4_38_write.png">
