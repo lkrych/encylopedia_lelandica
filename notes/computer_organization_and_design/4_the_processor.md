@@ -627,9 +627,114 @@ Because some instructions do not write registers, this policy is inaccurate, som
 
 MIPS requires that every use of `$0` as an operand must yield an operand value of 0. In the event that an instruction in the pipeline has `$0` as its destination, we want to avoid forwarding its possible non-zero result value. Not forwarding results destined for `$`0 frees the assembly programmer and the compiler of any requirement to avoid using `$0` as a destination. The conditions work properly as long as we add `EX/MEM.RegisterRd != 0` to the first hazard condition and `MEM/WB.RegisterRd != 0` to the second. (TODO: What does this mean? Are instructions that shouldn't be forwarded just programmed with a 0 in the destination?).
 
-If we can take the inputs to the ALU from any pipeline register rather than just the ID/EX, then we can forward the proper data. By adding multiplexors to the inputs of the ALU, and with the proper controls, we can run the pipeline at full speed in the presence of data dependencies.
-
 Let's look at the a figure that shows the same dependencies we saw earlier, but this time shows them beginning from the pipeline register, rather than the WB stage.
 
 <img src="image/4_53.png">
 
+If we can take the inputs to the ALU from any pipeline register rather than just the ID/EX, then we can forward the proper data. By adding multiplexors to the inputs of the ALU, and with the proper controls, we can run the pipeline at full speed in the presence of data dependencies.
+
+Let's take a look at a close-up of the ALU and pipeline register before and after adding forwarding.
+
+<img src="image/4_54.png">
+
+Note that the full datapath isn't shown. Also note that the ID/EX.RegisterRt field is shown twice, once to connect to the mux and once to the forwarding unit, but it is a single signal.
+
+The next figure show the values of the control lines for the ALU multiplexors that select wither the register file values or one of the forwarded values.
+
+<img src="image/4_55.png">
+
+This forwarding control will be in the EX stage, because the ALU forwarding multiplexors are found in that stage. Thus, **we must pass the operand register numbers from the ID stage** via the ID/EX pipeline register to determine whether to forward values. We already have the rt field (bits 20-16). Before forwarding, the ID/EX register had no need to include space to hold the rs field, Hence, rs is added to ID/EX.
+
+#### Data Hazards and Stalls
+
+One case where forwarding cannot save that day is when an instruction tries to read a register following a `load` instruction that writes to the same register. Let's look at a representation of this problem.
+
+<img src="image/4_58.png">
+
+The data is still being read from memory in clock cycle 4 while the ALU is performing the operation for the following instruction. Something must stall the pipeline for the combination of `load` followed by an instruction that reads its result.
+
+Hence, in addition to a forwarding unit, we need a **hazard detection unit**. It operates during the ID stage so that it can insert the stall between load and its use. Checking for load instructions, the control for the hazard detection unit is this single condition:
+
+```
+   if (ID/EX.MemRead and
+        ((ID/EX.RegisterRt = IF/ID.RegisterRs) or
+          (ID/EX.RegisterRt = IF/ID.RegisterRt)))
+          stall the pipeline
+```
+
+The first line tests to see if the instruction is a `load`. The next two lines check to see if the destination register field of the `load` in the EX stage matches either source register of the instruction in the ID stage. If the condition holds, the instructions stalls one clock cycle. After one clock cycle, the forwarding logic can handle the dependence and execution proceeds.
+
+If the instruction in the ID stage is stalled, then the instruction in the IF stage must also be stalled. Preventing these two instructions from making progress is accomplished by preventing the PC register and the IF/ID pipeline from changing. Provided these registers are preserved, the instruction will continue to be read using the same PC, and the registers in the ID stage will continue to be read using the same instruction fields in the IF/ID pipeline register.
+
+Of course, if we are stalling the pipeline, something must be having in those empty stages. Yes indeed, they are **executing instructions that have no effects**: **nops**. To insert these instructions, we need to deassert all nine control signals. 
+
+<img src="image/4_59.png">
+
+The figure above shows what happens in the hardware: the pipeline execution slot associated with the `and` instruction is turned into a `nop` and all instructions beginning with the `and` instruction are delayed one cycle. In this example, the stall forces the `and` and `or` instructions to repeat in clock cycle 4 what they did in clock cycle 3. 
+
+Let's now look at a schema of the datapath with the hazard and control unit added:
+
+<img src="image/4_60.png">
+
+As before the forwarding unit controls the ALU multiplexors to replace the value from a general-purpose register with the value from the proper pipeline register. The hazard detection unit controls the writing of the PC and IF/ID registers plus the multiplexor that chooses between the real values and all 0s.
+
+### Control Hazards
+
+Thus far, we have limited our concern to hazards involving arithmetic operations and data transfers. Let's look at some pipeline hazards involving branches. An instruction must be fetched at every clock cycle to sustain the pipeline, yet in our design the decision about whether to branch doesn't occur until the MEM stage. This delay in determining the proper instruction to fetch is called a control hazard or branch hazard.
+
+<img src="image/4_61.png">
+
+This section is shorter than the previous one because there is nothing as effective against control hazards as forwarding is against data hazards. We will look at two schemes for resolving control hazards and one optimization to improve these schemes.
+
+
+#### Assume branch not taken
+
+One improvement over branch stalling is to predict that the branch will not be taken and thus continue execution down the sequential instruction stream. If the branch is taken, the instructions that are being fetched and decoded must be discarded. Execution continues at the branch target. If branches are untaken half the time, and if it costs little to discard the instructions, this optimization halves the cost of control hazards.
+
+To discard instructions, we change the original control values to 0s, much as we did to stall for a load-use data hazard. The difference is that we must also change the three instructions in the IF, ID and EX stages when the branch reaches the MEM stage. This is called flushing the pipeline.
+
+#### Reducing the delay of branches
+
+One way to improve branch performance is to reduce the cost of the taken branch. Thus far, we have assumed the next PC for a branch is selected in the MEM stage, but **if we move the branch execution earlier in the pipeline, then fewer instructions need to be flushed**.
+
+Moving the branch decision up requires two actions to occur earlier: computing the branch target address and evaluating the branch decision. The easy part of this change is to move up the branch address calculation. WE already have the PC value and the immediate field in the IF/ID pipeline register, so we just move the branch adder from the EX stage to the ID stage. This will be calculated for all instructions but only used when needed.
+
+The harder part is the branch decision itself. For branch equal, we would compare the two registers read during the ID stage to see if they are equal. Equality can be tested by first exclusive ORing their respective bits and the ORing all the results. Moving the branch test to the ID stage implies additional forwarding and hazard detection hardware, since a branch dependent on a result still in the pipeline must still work properly with this optimization.
+
+There are two complicating factors:
+
+1. During ID, we must decode the instruction, decided whether a bypass to the equality unit is needed, and complete the equality comparison so that if the instruction is a branch, we can set the PC to the branch target address. Forwarding for the operands of branches was formerly handled by the ALU forwarding logic, but the introduction of the equality test unit in ID will require new forwarding logic.
+
+2. Because the values in a branch comparison are needed during ID but may be produced later in time, it is possible that a data hazard can occur and a stall will be needed.
+
+Despite these difficulties, moving the branch execution to the ID stage is an improvement because it reduces the penalty of a branch to only one instruction if the branch is taken.
+
+#### Dynamic Branch Prediction
+
+Assuming a branch is not taken is one simple form of branch prediction. In that case, we predict that branches are untaken, flushing the pipeline when we are wrong. For a simple five stage pipeline, this is probably adequate.  With deeper pipelines, the branch penalty increases when measured in clock cycles. **With more hardware it is possible to try to predict branch behavior during program execution**.
+
+One approach is to look up the address of the instruction to see if a branch was taken the last time the instruction was executed, and, if so, to begin fetching new instructions from the same place the last time. This technique is called dynamic branch prediction.
+
+Let's look at some implementations of dynamic branch prediction. One implementation is a **branch prediction buffer** or **branch history table**. A branch prediction buffer is a small memory indexed by the lower portion of the address of the branch instruction. The memory contains a bit that says whether the branch was recently taken or not.
+
+This is the simplest sort of buffer, we don't know if the prediction is the right one, it may have been put there by another branch with the same low-order address bits. However, this is better than nothing, prediction is just a hint we hope is correct, if the hint turns out wrong we can delete the prediction and fix it.
+
+This simple prediction scheme has one performance shortcoming though: even if a branch is almost always taken, we can predict incorrectly twice, rather than once, when it is not taken:
+
+Consider a loop branch that branches nine times in a row, then is not taken once. What is the branch prediction accuracy for this branch, assuming the prediction bit for this branch remains in the prediction buffer?
+
+The steady-state prediction behavior will mispredict on the first and last iterations. Mispredicting the last iteration is inevitable since the prediction bit will indicate taken, as the branch has been taken nine times in a row. The misprediction on the first iteration happens because the bit is flipped on prior execution of the last iteration of the loop, since the branch was not taken on that exiting iteration. Thus the prediction accuracy for this branch that is taken 90% is only 80%.
+
+Ideally, the accuracy of the predictor would match the taken branch frequency for these regular branches. To remedy this weakness, 2-bit prediction schemes are often used. **In a 2-bit scheme, a prediction must be wrong twice before it is changed**.
+
+<img src="image/4_63.png">
+
+A branch prediction buffer can be implemented as a small, special buffer accessed with the instruction address during the IF pipe stage. If the instruction is predicted as taken, fetching begins from the target as soon as the PC is known, otherwise sequential fetching and executing continues.
+
+A branch predictor tells us whether or not a branch is taken, but still requires the calculation of the branch target. In the five stage pipeline, this calculation takes one cycle, meaning that taken branches will have a 1-cycle penalty. Delayed branches are one approach to eliminate that penalty. Another approach is to hold the destination program counter or destination instruction using a branch target buffer. 
+
+The 2-bit prediction scheme uses only information about a particular branch. Researchers noticed that using information about both a local branch, and the global behavior of recently executed branches together yields greater accuracy for the same number of prediction bits. 
+
+Such predictors are called correlating predictors. A typical correlating predictor might have two 2-bit predictors for each branch, with the choice between predictors made based on whether the last executed branch was taken or not taken. Thus the global branch behavior can be thought of as adding additional index bits for the prediction lookup.
+
+A more recent innovation in branch prediction is the use of tournament predictors. A tournament predictor uses multiple predictors, tracking, for each branch, which predictor yields the best results. As typical tournament predictor might contain two predictions for each branch index: one based on local information and one based on global branch behavior. A selector would choose which predictor to use for any given prediction.
