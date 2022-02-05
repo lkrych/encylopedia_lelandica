@@ -534,3 +534,102 @@ We will now look at **what happens in a datapath as a load instruction goes thro
 5. **Write-back**: The load instruction reads the data from the MEM/WB pipeline register and writes it into the register file in the middle of the figure.
 
 <img src="image/4_38_write.png">
+
+#### Pipelined Control
+
+Just as we added control to the single cycle datapath, we now add control to the pipelined datapath. We start with a simple and unrealistic design.
+
+We will borrow as much as we can from the control for the simple datapath. In particular, we will use the same ALU control logic, branch logic, destination-register-number multiplexor and control lines. 
+
+As was the case for the single-cycle implementation, **we assume that the PC is written on each clock cycle**, so there is no separate write signal for the PC. By the same argument, there are no separate write signals for the pipeline registers, since the pipeline registers are also written during each clock cycle.
+
+<img src="image/4_47.png">
+
+<img src="image/4_48.png">
+
+
+To specify control for the pipeline, we need only set the control values during each pipelined stage. Because each control line is associated with a component active in only a single pipeline stage, we can divide the control lines into five groups:
+
+1. **Instruction fetch**: The control signals to read instruction memory and to write the PC are always asserted. There is nothing to control.
+
+2. **Instruction decode/register file read**: As in the previous stage, the same thing happens every clock cycle, so no optional control lines are set.
+
+3. **Execution/address calculation**: The signals to be set are RegDst, ALUOp, and ALUSrc. The signals select the Result register, the ALU operation, and either read data 2 or a sign-extended intermediate for the ALU.
+
+4. **Memory Access**: The control lines set in this stage are Branch, MemRead, and MemWrite. The branch equal, load and store instructions set these signals, respectively. Recall that PCSrc selects the next sequential address unless control asserts Branch and the ALU result was 0
+
+5. **Write-back**: The two control lines are MemtoReg, which decides between sending the ALU result of the memory value to the register file, and RegWrite, which writes the chosen value.
+
+Implementing control means setting the nine control lines to these values in each stage for each instruction. The simplest way to do this is to extend the pipeline registers to include control information.
+
+<img src="image/4_50.png">
+
+Since the control lines start with the EX stage, we can create the control information during instruction decode. The figure above shows that these control signals are then used in the appropriate pipeline stage as the instruction moves down the pipeline.
+
+
+<img src="image/4_51.png">
+
+### Data Hazards: Forwarding versus Stalling
+
+It's time to take off the rose-colored glasses. With the instructions we've sent through this pipeline so far, none of them used the results calculated by any of the others. We know that [data hazards](pipeline-hazards-data-hazard) are obstacles in pipelined execution.
+
+Let's look at a sequence with many dependencies (shown in color):
+
+<img src="image/4_data_haz.png">
+
+The last four instructions are all dependent on the result in register `$2` of the first instruction. If register `$2` had the value 10 before the subtract instruction and -20 afterwards, the programmer intends that -20 will be used in the following instruction that refer to register `$2`.
+
+How do you think this sequence does in our pipeline? Let's look at a visual representation of the pipeline.
+
+<img src="image/4_52.png">
+
+The value of register `$2` is at the top of the figure, it changes during the middle of clock cycle 5 when the `sub` instruction writes its result.
+
+The last potential hazard can be resolved by the design of the register file hardware: What happens when a register is read and written in the same clock cycle? We assume that the write is in the first half of the clock cycle and the read is in the second half so that the read delivers what was written.
+
+This figure shows that the value read for register `$2` would not be the result of the sub instruction unless the read occurred during clock cycle 5 or later. Thus the instructions that would get the correct value of -20 are `add` and `sw`.
+
+The `and` and `or` would get the incorrect value! You can tell this by looking at the drawing because the dependence line goes backward in time.
+
+We mentioned in the previous section on [data hazards](pipeline-hazards-data-hazard) that the desired result is available at the end of the EX stage (clock cycle 3) The data is actually needed by `and` and `or` on clock cycle 4 and 5, so **we can execute this pipeline without stalls if we forward the data as soon as it is available** to any units that need it.
+
+How does forwarding work? For simplicity, we consider only the challenge of forwarding to an operation in the ED stage, which may be either an ALU operation or an effective address calculation. This means that when an instruction tries to use a register in its EX stage that an earlier instruction intends to write in its WB stage, we actually need the values as inputs to the ALU.
+
+A notation is used to describe the dependence between the pipeline registers and the position of the register in the instruction that is being executed.
+
+<img src="image/4_register_dependence_notation.png">
+
+The first part of the name, left of the period, is the name of the pipeline register. The second part is the name of the field in that register (destionation (d), source(s), target(t)).
+
+Let's look back at the sequence with data hazards:
+
+<img src="image/4_data_haz.png">
+
+What class of hazard conditions does each line have?
+
+The second line:
+
+`and $12, $2, $5`
+
+has a dependence between its source field and the destination field of the `sub` instruction. This means the class is `EX/MEM.RegisterRd = ID/EX.RegisterRS`.
+
+The third line:
+
+`or $13, $6, $2`
+
+has a dependence between its target field and the destination field of the sub instruction, however, because we are a clock cycle later the pipeline register is different. The class is `MEM/WB.RegisterRd = ID/EX.RegisterRt`. 
+
+The rest of the instructions do not have data hazards.
+
+Because some instructions do not write registers, this policy is inaccurate, sometimes it would forward when it shouldn't. One solution is simply to **check to see if the RegWrite signal will be active**: this means examining the WB control field of the pipeline register during the EX and MEM stages determined whether RegWrite is asserted.
+
+<img src="image/4_50.png">
+
+MIPS requires that every use of `$0` as an operand must yield an operand value of 0. In the event that an instruction in the pipeline has `$0` as its destination, we want to avoid forwarding its possible non-zero result value. Not forwarding results destined for `$`0 frees the assembly programmer and the compiler of any requirement to avoid using `$0` as a destination. The conditions work properly as long as we add `EX/MEM.RegisterRd != 0` to the first hazard condition and `MEM/WB.RegisterRd != 0` to the second. (TODO: What does this mean? Are instructions that shouldn't be forwarded just programmed with a 0 in the destination?).
+
+If we can take the inputs to the ALU from any pipeline register rather than just the ID/EX, then we can forward the proper data. By adding multiplexors to the inputs of the ALU, and with the proper controls, we can run the pipeline at full speed in the presence of data dependencies.
+
+Let's look at the a figure that shows the same dependencies we saw earlier, but this time shows them beginning from the pipeline register, rather than the WB stage.
+
+<img src="image/4_53.png">
+
