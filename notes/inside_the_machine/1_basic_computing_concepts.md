@@ -251,6 +251,6 @@ where offset is the distance in bytes of the desired memory location.
 
 This technique requires that a quick addition operation be part of the execution of the load instruction, so this is why the load-store units in modern processors contain very fast integer addition hardware.
 
-By using register-relative addressing instead of absolute addressing, a programmer can write programs without knowing the exact location of data in memory. All the programmer needs to know is which register the OS will place the data segment's base address in.
+By using register-relative addressing instead of absolute addressing, **a programmer can write programs without knowing the exact location of data in memory**. All the programmer needs to know is which register the OS will place the data segment's base address in.
 
 Because both memory addresses and regular integer numbers are stored in the same registers, these registers are called general-purpose registers (GPRs)
