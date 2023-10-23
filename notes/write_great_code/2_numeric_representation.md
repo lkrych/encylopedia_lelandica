@@ -95,3 +95,9 @@ To write great code, **you don't need to avoid using numeric/string conversions 
 ## Internal Numeric Representation
 
 Most modern computer systems use an internal binary format to represent values and other objects. However, most systems can only efficiently represent binary values of a given size. In order to write great code, you need to make sure that your programs use data objects that the machine can represent efficiently.
+
+Most computer systems only allow you to work with bit strings of certain fixed lengths:
+* a **nibble** is 4 bits
+* a **byte** is 8 bits.  A byte is the smallest addressable data item on many CPUs, this means that the C**PU can efficiently retrieve data in groups of 8 bits from memory**.
+
+Because the byte is the smallest unit of storage on most machines, and many languages uses bytes to represent objects that require fewer than 8 bits, we need a way of denoting individual bits within a byte. To describe bits within a byte, we can use bit numbers. Bit 0 is the low order (LO) or least significant bit. Bit 7 is the high-order (HO) or most-significant bit. 
