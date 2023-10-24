@@ -101,3 +101,59 @@ Most computer systems only allow you to work with bit strings of certain fixed l
 * a **byte** is 8 bits.  A byte is the smallest addressable data item on many CPUs, this means that the C**PU can efficiently retrieve data in groups of 8 bits from memory**.
 
 Because the byte is the smallest unit of storage on most machines, and many languages uses bytes to represent objects that require fewer than 8 bits, we need a way of denoting individual bits within a byte. To describe bits within a byte, we can use bit numbers. Bit 0 is the low order (LO) or least significant bit. Bit 7 is the high-order (HO) or most-significant bit. 
+
+Let's look at an example that uses two bytes:
+
+<image src="images/2_byte.png">
+
+Most CPUs efficiently handle objects up to a certain size (typically 32 or 64 bits in contemporary systems). That doesn't mean you can't work with larger objects, only that it is less efficient to do so.
+
+## Signed and Unsigned Numbers
+
+How are negative numbers represented in binary? To **represent signed values**, most computer systems use the **two's complement numbering system**. 
+
+With `n` bits, we can represent 2^`n` different objects. Because negative values are objects in their own right, we have to **divide these** 2^`n` **combinations between negative and non-negative values**.
+
+In general, with `n` bits, we can represent the signed values in the range -2^`n-1` + 2^`n-1`.
+
+The two's complement system uses the **HO bit** as a **sign bit**. If the HO bit is 0, the number is non-negative and has the usual binary encoding, if the HO bit is 1, the number is negative and uses the two's complement encoding.
+
+To negate a number, you can use the two's complement operation:
+1. invert all the bits in the numbers.
+2. add 1 to the inverted result. 
+
+If the result is negative, then this is the two's complement form of the non-negative value. Let's look at an example of negating 5.
+
+1. %0000_0101  5 (in binary)
+2. %1111_1010  Invert all the bits
+3. %1111_1011  Add 1 to obtain -5
+
+To read a number in two's complement, **add all the digits like you would in a normal representation but then subtract the value represented by the HO bit.**
+
+```
+%1111_1011 = -5
+
+-128 + 64 + 32 + 16 + 8 + 2 + 1 = -5
+```
+
+Let's do take -5 and negate it
+
+1. %1111_1011  -5 (in binary)
+2. %0000_0100  Invert all the bits
+3. %0000_0101  Add 1 to obtain 5
+
+One thing to note here is that you cannot negate the smallest negative value in the two's complement system.
+
+## Useful properties of binary numbers
+
+1. If a bit position 0 of a binary value contains 1, the number is an **odd number**, if this bit contains 0, **the number is even**. 
+2. If the LO n bits of a binary number all contain 0, then the number is evenly divisible by 2^n.
+3. Shifting all the bits in a number to the left by one position multiplies the binary value by 2.
+4. Shifting all the bits of an unsigned binary number to the right by one position effectively divides the number by 2. 
+5. Inverting all the bits in a binary number is the same thing as negative the value and then subtracting by 1
+
+## Sign Extension, Zero Extension, Contraction
+
+With the two's complement system, **a single negative value is represented differently depending on the size of the representation** (because the HO bit has to be subtracted).
+
+This conversion and its converse are known as **sign extension** and **contraction** operations.
