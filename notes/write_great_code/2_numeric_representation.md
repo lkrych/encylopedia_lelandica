@@ -1,5 +1,21 @@
 # Numeric Representation
 
+## Table of Contents
+* [Numbering Systems](#numbering-systems)
+* [Radix values](#radix-values)
+* [The Binary Numbering system](#the-binary-numbering-system)
+* [Converting between Decimal and Binary Representation](#converting-between-decimal-and-binary-representation)
+* [Hexadecimal Numbering system](#hexadecimal-numbering-system)
+* [Numeric/String Conversions](#numericstring-conversions)
+    * [Converting a decimal string into a decimal](#converting-a-decimal-string-into-a-decimal)
+* [Internal Numeric Representation](#internal-numeric-representation)
+    * [Signed and Unsigned Numbers](#signed-and-unsigned-numbers)
+    * [Useful properties of binary numbers](#useful-properties-of-binary-numbers)
+    * [Sign Extension, Zero Extension, Contraction](#sign-extension-zero-extension-contraction)
+    * [Saturation](#saturation)
+    * [Fixed point representation](#fixed-point-representation)
+    * [Scaled Numeric Formats](#scaled-numeric-formats)
+
 ## Introduction
 
 High-level languages shield programmers from the pain of dealing with numeric representation. Writing great code, however, requires that you understand how computers represent numbers. This is because that this is fundamentally what the underlying hardware is operating on.
@@ -157,3 +173,48 @@ One thing to note here is that you cannot negate the smallest negative value in 
 With the two's complement system, **a single negative value is represented differently depending on the size of the representation** (because the HO bit has to be subtracted).
 
 This conversion and its converse are known as **sign extension** and **contraction** operations.
+
+Let's look at an example: the value -64. The 8-bit two's complement representation for this number is `$C0`. The 16-bit equivalent is `$FFC0`.
+
+Now consider the value +64. The 8-bit value is `$40` and the 16-bit is `$0040`. **We extend the size of negative values differently than we extend the size of non-negative values.** 
+
+To **sign-extend** a value, **copy the sign bit into the additional HO bits in the new format**. 
+
+So, for example, to sign-extend an 8-bit number to a 16-bit number, copy bit 7 of the 8-bit number into the bits 8 through 15 of a 16-bit number.
+
+<image src="images/2_sign_extension.png">
+
+**Zero extension** converts small unsigned values to larger unsigned values,  it is very easy, just store 0s in the HO bytes of the larger operand.
+
+<image src="images/2_zero_extension.png">
+
+The important thing to remember here is that converting between different sizes isn't always free. This means you **should be careful when mixing variables of different sizes within the same arithmetic expression**.
+
+**Sign Contraction** is converting a value with some number of bits to the same value with a fewer number of bits. To properly sign contract, you must look at the HO byte(s) that you want to discard:
+1. The HO bytes must all contain either `0` or `$FF`
+2. The HO bit of your resulting value must match every bit you've removed from the number.
+
+<image src="images/2_sign_contraction.png">
+
+## Saturation
+
+You can also reduce the size of an integer value through **saturation**, which is useful when **you're willing to deal with loss of precision**.
+
+To convert a value via saturation, **you copy the LO bits of the larger object into the smaller object**. If the **larger value is outside the smaller object's range**, then you clip the larger value by **setting the smaller object to the largest value within the smaller value's range**.
+
+For example when converting a 16-bit integer to an 8-bit integer, if the 16-bit value is in the range -128 through +127 you can copy the LO byte to the 8-bit object. 
+
+If the 16-bit signed value is greater than 127 you store 127 into the 8-bit object, likewise if it is less than -128, you store -128. 
+
+## Fixed point representation
+
+There are two ways computer systems commonly represent numbers with fractional components: **fixed point representations and floating-point representations**. 
+
+When using fixed-point binary format, **you choose a particular bit in the binary representation and implicitly place the binary point before that bit**. You choose the bit based on the number of significant bits you require in the fractional portion of the number.
+
+One issue with fixed point representation is that you lose precision. You cannot exactly represent 1.3 with this format.
+
+
+## Scaled Numeric Formats
+
+**Scaled numeric forma**t combines the exact representations of certain decimal fractions with the precision of binary format.  In this strategy you convert your fraction components to whole numbers, operate on the whole numbers and then convert back tot he fractional representation.
