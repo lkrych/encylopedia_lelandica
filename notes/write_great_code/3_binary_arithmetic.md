@@ -2,6 +2,20 @@
 
 ## Table of Contents
 
+* [Arithmetic Operations on Binary and Hexadecimal Numbers](#arithmetic-operations-on-binary-and-hexadecimal-numbers)
+    * [Adding Binary Values](#adding-binary-values)
+    * [Subtracting Binary Values](#subtracting-binary-values)
+    * [Multiplying Binary Values](#multiplying-binary-values)
+    * [Dividing Binary Values](#dividing-binary-values)
+* [Logical Operations on Bits](#logical-operations-on-bits)
+* [Logical Operations on Binary Numbers and Bit Strings - Masking](#logical-operations-on-binary-numbers-and-bit-strings-masking)
+ * [Useful Bit Operations](#useful-bit-operations)
+    * [Testing Bits in a Bit String using AND](#testing-bits-in-a-bit-string-using-and)
+    * [Testing a Set of Bits for Zero/Non-Zero using AND](#testing-a-set-of-bits-for-zerononzero-using-and)
+    * [Modulo-N Counters](#modulon-counters)
+* [Shifts and Rotates](#shifts-and-rotates)
+* [Bit Fields and Packed Data](#bit-fields-and-packed-data)
+
 ## Arithmetic Operations on Binary and Hexadecimal Numbers
 
 #### Adding Binary Values
