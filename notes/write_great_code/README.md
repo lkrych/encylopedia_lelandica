@@ -28,3 +28,8 @@ This book will focus on **machine organization**, a subset of computer architect
 * Is well tested
 * is well documented
 
+### Chapters
+
+* [2 - Numeric Representation](2_numeric_representation.md)
+* [3 - Binary Arithmetic](3_binary_arithmetic.md)
+
